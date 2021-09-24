@@ -30,6 +30,10 @@ let paintCanvas = {
   width: 1800,
   height: 500,
 }
+// RGB colour settings input
+let randomNumber=random(0, 5);
+let greenMouse = map(mouseX, 0, width, 0, 255);
+let blueMouse = map(mouseY, 0, width, 0, 255);
 
 // Paintbrush and colour-picker object
 let circle = {
@@ -75,9 +79,6 @@ function setup() {
 
 function draw() {
 // Paintbrush colour variation settings
-  let randomNumber=random(0, 5);
-  let greenMouse = map(mouseX, 0, width, 0, 255);
-  let blueMouse = map(mouseY, 0, width, 0, 255);
   fill(200, greenMouse, blueMouse);
   noStroke();
   circle.x = mouseX;
