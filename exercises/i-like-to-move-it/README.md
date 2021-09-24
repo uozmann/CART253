@@ -1,3 +1,10 @@
-# Template p5 project
+Exercise1: I like to move it
+Man Zou
 
-This is the README file for the entire project. For more official projects you should write information here about the nature of the project, your name, any special explanations of how the project works, etc.
+How to play: use the cursor in the gray area to select the colour for the moving ellipse!
+Include three shapes: arc, triangle, rectancle and ellipse.
+Include movement: arc moving on x axis.
+Include size changes: arc changing its size.
+Include color changes: paintbrush changes colour according to position and affects the arc.
+Use map() and constrain(): line 81, 82, 91, 93, 95.
+Respond to the mouse position using mouseX and mouseY: the ellipse, which is also the paintbrush that follows the cursor.
