@@ -1,24 +1,16 @@
-/**
-Exercise1: I like to move it
-Man Zou
-Include three shapes: arc, triangle, rectancle and ellipse.
-Include movement: arc moving on x axis.
-Include size changes: arc changing its size.
-Include color changes: paintbrush changes colour according to position and affects the arc.
-Use map() and constrain(): line 81, 82, 91, 93, 95.
-Respond to the mouse position using mouseX and mouseY: the ellipse.
-*/
+// Exercise1: I like to move it
+// Man Zou
+// Include three shapes: arc, triangle, rectancle and ellipse.
+// Include movement: arc moving on x axis.
+// Include size changes: arc changing its size.
+// Include color changes: paintbrush changes colour according to position and affects the arc.
+// Use map() and constrain(): line 81, 82, 91, 93, 95.
+// Respond to the mouse position using mouseX and mouseY: the ellipse.
 
 "use strict";
 
-
-/**
-Description of preload
-*/
 function preload() {
-
 }
-
 
 let backgroundShade = 0;
 
