@@ -45,17 +45,6 @@ function draw() {
     backgroundShade= 0;
   }
 
-  circle.x = circle.x + circle.speed;
-  if(circle.x > width){
-    circle.speed=-circle.speed;
-  }
-  if (circle.x < 0) {
-    // Move it back to the right by making it the negative of itself again!
-    // This works because the circle will only go off the left if it is moving
-    // left, which means it would have a NEGATIVE speed, and if we make that NEGATIVE
-    // speed the negative of itself, we get a POSITIVE speed again!
-    circle.speed = -circle.speed;
-  }
   fill(circle.fill);
   if (mouseIsPressed === true) {
     // This happens when EITHER of the two conditions are true
@@ -75,7 +64,16 @@ if(displayCircle) {
 noFill();
   stroke(255, 0, 0);
   ellipse(dangerZone.x, dangerZone.y, dangerZone.size);
-  
+  let d = dist(circle.x, circle.y, dangerZone.x, dangerZone.y);
+// Check if our white circle overlaps the danger zone...
+while (d < circle.size / 2 + dangerZone.size / 2) {
+  // If it does, try a different random position!
+  circle.x = random(0, width);
+  circle.y = random(0, height);
+  // Recalculate the distance for the next time through the loop
+  d = dist(circle.x, circle.y, dangerZone.x, dangerZone.y);
+}
+
 let x = caterpillar.x;
 let segmentsDrawn = 0;
 // while (segmentsDrawn < caterpillar.totalSegments) {
