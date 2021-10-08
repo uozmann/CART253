@@ -5,8 +5,10 @@
 // Change the way the simulation looks: changed colours, elements, and shapes
 
 "use strict";
+let img;
 
 function preload() {
+  img = loadImage('assets/images/mascot.png');
 }
 
 let backgroundShade = {
@@ -57,30 +59,31 @@ function draw() {
   // The moving circle and settings to make it move according to keyboard commands
   push();
   if (controlOptions.left) {
-    character.x += 1;
+    character.x += 3;
   }
   else if (!controlOptions.left) {
     character.x += 0;
   }
   if (controlOptions.right) {
-    character.x += -1;
+    character.x += -3;
   }
   else if (!controlOptions.right) {
     character.x += 0;
   }
   if (controlOptions.top) {
-    character.y += 1;
+    character.y += 3;
   }
   else if (!controlOptions.top) {
     character.y += 0;
   }
   if (controlOptions.down) {
-    character.y += -1;
+    character.y += -3;
   }
   else if (!controlOptions.top) {
     character.y += 0;
   }
   ellipse(character.x, character.y, character.size);
+  image(img, character.x-36, character.y-35, character.size, character.size);
   pop();
 
   // Control options for drawing a line to the true point
