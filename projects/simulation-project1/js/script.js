@@ -6,19 +6,6 @@
 let cairoBlack;
 let cairoRegular;
 let state = 'title'
-let bgTitle = {
-  r: 100,
-  g: 100,
-  b: 120,
-};
-
-let bgGame = {
-  r: 240, 
-  g: 220,
-  b: 160,
-};
-
-let bgEnding;
 let bgPoints = {
   x: 0,
   y: 0,
@@ -38,11 +25,27 @@ let bgAutoPoints = {
   trail: [],
 }
 
+let gameDangerZone = {
+  x: 0,
+  y: 650,
+  width: 1000,
+  height: 50,
+}
+
+let player = {
+  x: 0,
+  y: 0,
+  size: 50,
+  vx: 0,
+  vy: 0,
+  speed: 0.01,
+}
+
 // Loading images and text font
 function preload() {
   cairoBlack = loadFont(`assets/fonts/Cairo/Cairo-Black.ttf`);
   cairoRegular = loadFont(`assets/fonts/Cairo/Cairo-Regular.ttf`);
-  bgGame = loadImage(`assets/images/cloudgirl-bg.jpg`)
+  // bgGame = loadImage(`assets/images/cloudgirl-bg.jpg`)
 }
 
 function setup() {
@@ -66,9 +69,32 @@ function draw() {
 }
 
 function title() {
-  background(bgTitle.r, bgTitle.g, bgTitle.b);
+  background(50);
   fill(255);
   textAlign(CENTER, CENTER);
+
+  // Background animation
+  push();
+  stroke(240, 220, 160);
+  strokeWeight(3);
+  for ( let i = 0; i < bgPoints.trail.length; i++ ) {
+    let pastPoints = bgPoints.trail[i];
+    point(pastPoints.x, pastPoints.y);
+    line(pastPoints.x, pastPoints.y, bgPoints.x, bgPoints.y);
+  }
+  bgPoints.x = mouseX;
+  bgPoints.y = mouseY;
+  point(bgPoints.x, bgPoints.y);
+  let newTrailPosition = {
+    x: bgPoints.x, 
+    y: bgPoints.y,
+  };
+  bgPoints.trail.push(newTrailPosition);
+
+  // for ( let j = 0; j < bgPoints.trail.length; j++ ) {
+  //   line(pastPoints.x, pastPoints.y, bgPoints.x, bgPoints.y);
+  // }
+  pop();
 
   // Title text
   push();
@@ -81,42 +107,29 @@ function title() {
   push();
   textFont(cairoRegular);
   textSize(24);
-  text(`Hover here to play`, width/2, height*3 / 4);
+  text(`Hover HERE to play`, width/2, height*3 / 4);
   let dStartGame = dist(mouseX, mouseY, width/2, height*3 / 4);
   if(dStartGame < 10) {
     state = 'game';
   }
   pop();
 
-  // Background animation
-  push();
-  stroke(220);
-  strokeWeight(10);
-  for ( let i = 0; i < bgPoints.trail.length; i++ ) {
-    let pastPoints = bgPoints.trail[i];
-    point(pastPoints.x, pastPoints.y);
-  }
-  bgPoints.x = mouseX;
-  bgPoints.y = mouseY;
-  point(bgPoints.x, bgPoints.y);
-  let newTrailPosition = {
-    x: bgPoints.x, 
-    y: bgPoints.y,
-  };
-
-  bgPoints.trail.push(newTrailPosition);
-  pop();
 }
 
-function game(){
-  background(bgGame.r, bgGame.g, bgGame.b);
+function game() {
   background(240, 220, 220);
   fill(255);
   textAlign(CENTER, CENTER);
 
+  // Danger zone at the bottom
+  push();
+  fill(50);
+  rect(gameDangerZone.x, gameDangerZone.y, gameDangerZone.width, gameDangerZone.height);
+  pop();
+
   // Background animation 
   push();
-  stroke(220);
+  stroke(220, 200, 200);
   strokeWeight(10);
   for ( let i = 0; i < bgPoints.trail.length; i++ ) {
     let pastPoints = bgPoints.trail[i];
@@ -133,6 +146,23 @@ function game(){
   bgPoints.trail.push(newTrailPosition);
   pop();
   
+  // Player
+  push();
+  fill(0);
+  player.vy += player.speed;
+  player.y = player.y + player.vy;
+  ellipse(player.x, player.y, player.size);
+  if (keyIsDown(65)) {
+    player.x += -5;
+  }
+  if (keyIsDown(68)) {
+    player.x += 5;
+  }
+
+  if(player.y > gameDangerZone.y) {
+    state = 'ending';
+  }
+  pop();
 }
 
 // Good ending
@@ -178,9 +208,13 @@ function ending2(){
 }
 
 // Return to the title page
-function keyPressed() {
-  if (key === 'r') {
-    state = 'title';
-    loop();
-  }
-}
+// function keyIsDown() {
+//   if (key === 'r') {
+//     state = 'title';
+//     loop();
+//   }
+//   if (key ==='a') {
+//     player.x += -1
+//   }
+//   if 
+// }
