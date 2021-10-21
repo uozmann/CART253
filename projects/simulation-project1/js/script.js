@@ -5,6 +5,7 @@
 // Fonts
 let cairoBlack;
 let cairoRegular;
+let lineFill;
 let state = 'title';
 let bgPoints = {
   x: 0,
@@ -48,6 +49,7 @@ let bubblesSize = 10;
 function preload() {
   cairoBlack = loadFont(`assets/fonts/Cairo/Cairo-Black.ttf`);
   cairoRegular = loadFont(`assets/fonts/Cairo/Cairo-Regular.ttf`);
+  lineFill = loadImage(`assets/images/fill-lines.jpg`);
 }
 
 function setup() {
@@ -56,11 +58,11 @@ function setup() {
     
     let steppingGround = {
       nbr: 10,
-      x: random(0, width-100),
-      y: random(0, height-100),
+      x: random(100, width-100),
+      y: random(60, height-100),
       size: 100,
       vx: 2,
-      vy: 2,
+      vy: 5,
     }
     steppingGrounds.push(steppingGround);
   }
@@ -89,7 +91,7 @@ function title() {
 
   // Background animation
   push();
-  stroke(220, 200, 200);
+  stroke(lineFill);
   strokeWeight(3);
 
   for ( let i = 0; i < bgPoints.trail.length; i++ ) {
@@ -164,7 +166,7 @@ function game() {
   player.vy += player.speed;
   player.y = player.y + player.vy;
   player.y = constrain(player.y, 0, height-50);
-  player.x = constrain(player.x, 0, width-50);
+  player.x = constrain(player.x, 0, width);
 
   ellipse(player.x, player.y, player.size);
   if (keyIsDown(65)) {
@@ -206,14 +208,16 @@ function game() {
     if(steppingGround.x > 950 || steppingGround.x < 50) {
       steppingGround.vx = -steppingGround.vx;
     }
-    if (steppingGround.y > 650 || steppingGround.y < 50) {
+    if (steppingGround.y > 650) {
+      steppingGround.y = 650
       steppingGround.vy = -steppingGround.vy;
+      // steppingGround.vy *= 0.99;
     }
 
-    let dBubbles = dist(steppingGround.x, steppingGround.y, steppingGround.x, steppingGround.y);
-    if(dBubbles <= steppingGround.size) {
+    // let dBubbles = dist(steppingGround.x, steppingGround.y, steppingGround.x, steppingGround.y);
+    // if(dBubbles <= steppingGround.size) {
       steppingGround.vy += 0.2;
-    }
+     // }
   }
 
   pop();
