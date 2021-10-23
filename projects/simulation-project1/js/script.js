@@ -5,9 +5,15 @@
 // Fonts
 let cairoBlack;
 let cairoRegular;
+// Images and Sounds
 let titleFill;
 let bubbleMask;
+let titleSFX, gameSFX, bubbleSFX;
+
+// State
 let state = 'title';
+
+// Drawing lines 
 let bgPoints = {
   x: 0,
   y: 0,
@@ -18,12 +24,8 @@ let bgPoints = {
   trail: [],
   player: [],
 }
-let bgPlayerPoints = {
-  x: 0,
-  y: 0,
-  trail: [],
-}
 
+// Bottom zone to switch to the end
 let gameDangerZone = {
   x: 0,
   y: 650,
@@ -31,6 +33,7 @@ let gameDangerZone = {
   height: 50,
 }
 
+// Player
 let player = {
   x: 0,
   y: 0,
@@ -40,22 +43,27 @@ let player = {
   speed: 0.01,
 }
 
+// Bubbles
 let steppingGrounds = [];
 let nbrSteppingGrounds = 5;
 
-let bubbles = [];
-let bubblesSize = 10;
 
-// Loading images and text font
+// Loading images, sounds and text font
 function preload() {
   cairoBlack = loadFont(`assets/fonts/Cairo/Cairo-Black.ttf`);
   cairoRegular = loadFont(`assets/fonts/Cairo/Cairo-Regular.ttf`);
   titleFill = loadImage(`assets/images/title-bg.jpg`);
   bubbleMask = loadImage(`assets/images/bubble-mask.jpg`);
+  titleSFX = loadSound(`assets/sounds/title-start.mp3`);
+  gameSFX = loadSound(`assets/sounds/game-play.mp3`);
+  bubbleSFX = loadSound(`assets/sounds/bubble-sound.mp3`);
 }
+
 
 function setup() {
   createCanvas(1000, 700);
+
+  // Creating array for the bubbles
   for ( let i = 0; i < nbrSteppingGrounds; i++) {
     let steppingGround = {
       nbr: 10,
@@ -84,6 +92,7 @@ function draw() {
     break;
   }
 }
+
 
 function title() {
   background(50);
@@ -125,18 +134,19 @@ function title() {
   text(`Hover HERE to play`, width/2, height*3 / 4);
   let dStartGame = dist(mouseX, mouseY, width/2, height*3 / 4);
   if(dStartGame < 10) {
+    titleSFX.play();
     state = 'game';
   }
   pop();
 
 }
 
+
 function game() {
+  // Setting up the background
   background(240, 220, 220);
-  textAlign(CENTER, CENTER);
   image(bubbleMask, 0, 0);
-
-
+ 
   // Danger zone at the bottom
   push();
   fill(50);
@@ -147,7 +157,7 @@ function game() {
   push();
   stroke(220, 200, 200);
   strokeWeight(1);
-
+  // Creating array for the lines drawn by the player
   for ( let i = 0; i < bgPoints.trail.length; i++ ) {
     let pastPoints = bgPoints.trail[i];
     point(pastPoints.x, pastPoints.y);
@@ -170,7 +180,7 @@ function game() {
   player.y = player.y + player.vy;
   player.y = constrain(player.y, 0, height-50);
   player.x = constrain(player.x, 0, width);
-
+  // User control
   ellipse(player.x, player.y, player.size);
   if (keyIsDown(65)) {
     player.x += -5;
@@ -185,6 +195,7 @@ function game() {
     let dPlayerBubbles = dist(steppingGround.x, steppingGround.y, player.x, player.y);
     if(dPlayerBubbles < player.size/2 + steppingGround.size/2) {
       player.vy = -2;
+      bubbleSFX.play();
     }
     if (player.y < 25) {
       player.vy += player.speed;
@@ -193,19 +204,21 @@ function game() {
 
   // Conditions for end of the game
   if(player.y >= gameDangerZone.y) {
+    titleSFX.play();
     state = 'ending';
   }
   pop();
 
   // Balls bounding on the screen
   push();
-  // fill(lineFill);
+  // Setting up colour variation for the bubbles and alpha variation
   let redBubble = map(player.x, 0, width, 200, 255);
-  let greenBubble = map(player.x, 0, height, 200, 255);
-  let blueBubble = map(player.y, 0, width, 200, 250);
+  let greenBubble = map(player.x, 0, height, 100, 155);
+  let blueBubble = map(player.y, 0, width, 100, 150);
   let transparencyBubble = map(player.y, 0, height, 200, 100);
   fill(redBubble, greenBubble, blueBubble, transparencyBubble);
   noStroke();
+  // Creating the movements of the bubbles
   for ( let i = 0; i < steppingGrounds.length; i++) {
     let steppingGround = steppingGrounds[i];
     steppingGround.x += steppingGround.vx;
@@ -214,38 +227,33 @@ function game() {
     steppingGround.x = constrain(steppingGround.x, 0, width);
     steppingGround.y = constrain(steppingGround.y, 0, height);
     ellipse(steppingGround.x, steppingGround.y, steppingGround.size);
-
+    // Setting up gravity and bouncing effect
     if(steppingGround.x > 950 || steppingGround.x < 50) {
       steppingGround.vx = -steppingGround.vx;
     }
     if (steppingGround.y > 650) {
       steppingGround.y = 650
       steppingGround.vy = -steppingGround.vy;
-      // steppingGround.vy *= 0.99;
+      // steppingGround.vy *= 0.99; this could be used to increase the speed it gets lower each times
     }
-
-    // let dBubbles = dist(steppingGround.x, steppingGround.y, steppingGround.x, steppingGround.y);
-    // if(dBubbles <= steppingGround.size) {
       steppingGround.vy += 0.2;
-     // }
   }
 
   pop();
   }
   
 
-
-
 // Ending
 function ending(){
+  // background image
   background(50);
   fill(240, 220, 220);
   image(titleFill, 0, 0);
 
+  // Recreating the painted motif from game
   push();
   stroke(120, 100, 100, 50);
   strokeWeight(3);
-
   for ( let i = 0; i < bgPoints.trail.length; i++ ) {
     let pastPoints = bgPoints.trail[i];
     point(pastPoints.x, pastPoints.y);
@@ -261,16 +269,24 @@ function ending(){
   bgPoints.trail.push(newTrailPosition);
   pop();
 
+  // Text
   push();
   textFont(cairoBlack);
   textSize(100);
   text(`End`, width / 2, height / 3);
   pop();
 
+  // Text
   push();
   textFont(cairoRegular);
   textSize(24);
-  text(`You touched the ground`, width/2, height*2 / 3);
+  text(`Your bubble painting has been created`, width/2, height*2 / 3);
   text(`Press "CTRL + R" to restart`, width/2, height*3/4);
   pop();
 } 
+
+// Sources used:
+// Simulation concept comes from myself.
+// Simulation codes come from myself with the help of course material and Pippin.
+// Images and visual elements are painted and created by myself.
+// Sounds effect comes from the open-source platform aigei.com.
