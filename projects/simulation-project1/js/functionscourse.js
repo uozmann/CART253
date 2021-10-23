@@ -1,22 +1,16 @@
 "use strict";
-// let bgPoints = {
-//   x: 0,
-//   y: 0,
-//   vx: 0,
-//   vy: 0,
-//   speed: 5,
-//   nbr: 2000,
-//   trail: [],
-// }
 
 let steppingGrounds = [];
 let nbrSteppingGrounds = 5;
-
+let bgVid;
 function preload() {
 }
 
 function setup() {
   createCanvas(1000, 700);
+  bgVid = createVideo(['assets/images/game-video.mp4']);
+  bgVid.loop();
+  bgVid.hide();
   for ( let i = 0; i < nbrSteppingGrounds; i++) {
     let steppingGround = {
       nbr: 10,
@@ -37,6 +31,7 @@ function draw() {
 function game() {
   background(240, 220, 220);
   fill(255);
+  image(bgVid, 0, 0);
   
   for ( let i = 0; i < steppingGrounds.length; i++) {
     let steppingGround = steppingGrounds[i];
@@ -83,33 +78,33 @@ function game() {
 //   pop();
 // }
 
-function title() {
-  background(50);
-  fill(255);
-  textAlign(CENTER, CENTER);
+// function title() {
+//   background(50);
+//   fill(255);
+//   textAlign(CENTER, CENTER);
 
-  // Background animation
-  push();
-  stroke(240, 220, 160);
-  strokeWeight(3);
+//   // Background animation
+//   push();
+//   stroke(240, 220, 160);
+//   strokeWeight(3);
 
-  bgPoints.x = mouseX;
-  bgPoints.y = mouseY;
-  point(bgPoints.x, bgPoints.y);
-  let newTrailPosition = {
-    x: bgPoints.x, 
-    y: bgPoints.y,
-  };
-  bgPoints.trail.push(newTrailPosition);
+//   bgPoints.x = mouseX;
+//   bgPoints.y = mouseY;
+//   point(bgPoints.x, bgPoints.y);
+//   let newTrailPosition = {
+//     x: bgPoints.x, 
+//     y: bgPoints.y,
+//   };
+//   bgPoints.trail.push(newTrailPosition);
 
-  if (bgPoints.trail.length>=2) {
-    // point(bgPoints.trail[0].x, bgPoints.trail[0].y);
-    for ( let i = 0; i < bgPoints.trail.length-1; i++ ) {
-      let pastPoints = bgPoints.trail[i];
-      let nextPoints = bgPoints.trail[i+1];
-      // point(nextPoints.x, nextPoints.y);
-      line(pastPoints.x, pastPoints.y, nextPoints.x, nextPoints.y);
-    }
-  }
-  pop();
-}
+//   if (bgPoints.trail.length>=2) {
+//     // point(bgPoints.trail[0].x, bgPoints.trail[0].y);
+//     for ( let i = 0; i < bgPoints.trail.length-1; i++ ) {
+//       let pastPoints = bgPoints.trail[i];
+//       let nextPoints = bgPoints.trail[i+1];
+//       // point(nextPoints.x, nextPoints.y);
+//       line(pastPoints.x, pastPoints.y, nextPoints.x, nextPoints.y);
+//     }
+//   }
+//   pop();
+// }

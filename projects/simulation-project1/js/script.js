@@ -5,7 +5,8 @@
 // Fonts
 let cairoBlack;
 let cairoRegular;
-let lineFill;
+let titleFill;
+let bubbleMask;
 let state = 'title';
 let bgPoints = {
   x: 0,
@@ -49,13 +50,13 @@ let bubblesSize = 10;
 function preload() {
   cairoBlack = loadFont(`assets/fonts/Cairo/Cairo-Black.ttf`);
   cairoRegular = loadFont(`assets/fonts/Cairo/Cairo-Regular.ttf`);
-  lineFill = loadImage(`assets/images/fill-lines.jpg`);
+  titleFill = loadImage(`assets/images/title-bg.jpg`);
+  bubbleMask = loadImage(`assets/images/bubble-mask.jpg`);
 }
 
 function setup() {
   createCanvas(1000, 700);
   for ( let i = 0; i < nbrSteppingGrounds; i++) {
-    
     let steppingGround = {
       nbr: 10,
       x: random(100, width-100),
@@ -88,10 +89,11 @@ function title() {
   background(50);
   fill(255);
   textAlign(CENTER, CENTER);
+  image(titleFill, 0, 0);
 
   // Background animation
   push();
-  stroke(lineFill);
+  stroke(240,220,220);
   strokeWeight(3);
 
   for ( let i = 0; i < bgPoints.trail.length; i++ ) {
@@ -131,8 +133,9 @@ function title() {
 
 function game() {
   background(240, 220, 220);
-  fill(255);
   textAlign(CENTER, CENTER);
+  image(bubbleMask, 0, 0);
+
 
   // Danger zone at the bottom
   push();
@@ -196,6 +199,13 @@ function game() {
 
   // Balls bounding on the screen
   push();
+  // fill(lineFill);
+  let redBubble = map(player.x, 0, width, 200, 255);
+  let greenBubble = map(player.x, 0, height, 200, 255);
+  let blueBubble = map(player.y, 0, width, 200, 250);
+  let transparencyBubble = map(player.y, 0, height, 200, 100);
+  fill(redBubble, greenBubble, blueBubble, transparencyBubble);
+  noStroke();
   for ( let i = 0; i < steppingGrounds.length; i++) {
     let steppingGround = steppingGrounds[i];
     steppingGround.x += steppingGround.vx;
@@ -230,9 +240,10 @@ function game() {
 function ending(){
   background(50);
   fill(240, 220, 220);
+  image(titleFill, 0, 0);
 
   push();
-  stroke(120, 100, 100);
+  stroke(120, 100, 100, 50);
   strokeWeight(3);
 
   for ( let i = 0; i < bgPoints.trail.length; i++ ) {
