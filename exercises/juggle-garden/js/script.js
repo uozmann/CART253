@@ -19,8 +19,16 @@ let state = `title`;
 let garden = {
   // An array to store the individual flowers
   flowers: [],
-  // How many flowers in the garden
   numFlowers: 20,
+  // An array to store the individual bees
+  bees: [],
+  numBees: 20,
+  // An array to store the individual giant bees the player controles
+  giantBees: [],
+  numGiantBees: 1,
+
+  // giantBees: [],
+  // numBees: 1,
   // The color of the grass (background)
   grassColor: {
     r: 120,
@@ -55,6 +63,28 @@ function setup() {
     garden.flowers.push(flower);
   }
   garden.flowers.sort(sortByY);
+  // Create our bees by counting up to the number of bees
+  for (let i = 0; i < garden.numBees; i++) {
+    // Create variables for our arguments for clarity
+    let x = random(0, width);
+    let y = random(0, height);
+    // Create a new bee using the arguments
+    let bee = new Bee(x, y);
+    // Add the bee to the array of bees
+    garden.bees.push(bee);
+  }
+
+  // Create our bees by counting up to the number of bees
+  for (let i = 0; i < garden.numGiantBees; i++) {
+    // Create variables for our arguments for clarity
+    let x = random(0, width);
+    let y = random(0, height);
+    // Create a new bee using the arguments
+    let giantBee = new GiantBee(x, y);
+    // Add the bee to the array of bees
+    garden.bees.push(giantBee);
+  }
+
 }
 
 function sortByY(flower1, flower2) {
@@ -98,13 +128,20 @@ function title() {
   push();
   textFont(cairoBlack);
   textSize(200);
-  text(`Juggle Garden`, width / 2, height / 3);
+  text(`Survival Garden`, width / 2, height / 3);
+  pop();
+
+  push();
+  textFont(cairoRegular);
+  textSize(32);
+  text(`You are a giant happy bee, try to take the flowers before the other bees do`, width/2, height/2 );
   pop();
 
   push();
   textFont(cairoRegular);
   textSize(24);
   text(`Press to Start`, width/2, height*3 / 4);
+  
   pop();
 
   let dStartGame = dist(mouseX, mouseY, width/5, height*3 / 4);
@@ -119,9 +156,52 @@ function game(){
   // Loop through all the flowers in the array and display them
   for (let i = 0; i < garden.flowers.length; i++) {
     let flower = garden.flowers[i];
-    flower.display();
+    if (flower.alive) {
+      // Update the flower by shrinking it and displaying it
+      flower.shrink(); // NEW! Shrink living flowers every frame
+      flower.display();
+    }
   }
-  noStroke();
+  
+  // Loop through all the bees in the array and display them
+  for (let i = 0; i < garden.bees.length; i++) {
+    let bee = garden.bees[i];
+    // Check if this bee is alive
+    if (bee.alive) {
+      // Update the bee by shrinking, moving and displaying it
+      bee.shrink();
+      bee.move();
+      for (let j = 0; j < garden.flowers.length; j++) {
+        let flower = garden.flowers[j];
+        bee.tryToPollinate(flower);
+      }
+
+      bee.display();
+    }
+  }
+
+  for (let i = 0; i < garden.giantBees.length; i++) {
+    let giantBee = garden.giantBees[i];
+    // Check if this bee is alive
+    if (giantBee.alive) {
+      // Update the bee by shrinking, moving and displaying it
+      // giantBee.shrink();
+      // giantBee.move();
+      for (let j = 0; j < garden.flowers.length; j++) {
+        let flower = garden.flowers[j];
+        giantBee.tryToPollinate(flower);
+      }
+      giantBee.display();
+    }
+    if (keyIsDown(65)) {
+      giantBee.x += -5;
+    }
+    if (keyIsDown(68)) {
+      giantBee.x += 5;
+    }
+  }
+
+
 
   
 }
@@ -170,9 +250,9 @@ function ending2(){
 
 // Return to the title page
 function keyPressed() {
-  if (key === 'r') {
-    state = 'title';
-    loop();
+  let giantBee1 = giantBees[0];
+  if (key === 'd') {
+    giantBee1.x = 500;
   }
 }
 

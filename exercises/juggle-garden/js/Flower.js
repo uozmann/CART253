@@ -1,4 +1,5 @@
 class Flower {
+
   // The constructor() sets up a flower's properties
   constructor(x, y, size, stemLength, petalColor) {
     // Position and size information
@@ -20,6 +21,36 @@ class Flower {
       g: 0,
       b: 0
     };
+    this.alive = true; // NEW! Track whether this flower is alive
+  }
+
+  // NEW! shrink()
+  // Shrinks the flower
+  shrink() {
+    // Choose a random amount to shrink
+    let shrinkage = random(0, 0.1);
+    // Reduce the petal thickness (divide by 10 to make it less rapid)
+    this.petalThickness = this.petalThickness - shrinkage / 10;
+    // Reduce the centre of the flower
+    this.size = this.size - shrinkage;
+
+    // If any of the key properties reach 0 or less, the flower is dead
+    if (this.petalThickness <= 0 || this.size <= 0) {
+      this.alive = false;
+    }
+  }
+
+  pollinate() {
+    // Choose a random amount to grow
+    let growth = random(0, 0.5);
+    // Increase the petal thickness (divide by 10 to make it less rapid)
+    this.petalThickness = this.petalThickness + growth / 10;
+    // Increase the centre of the flower
+    this.size = this.size + growth;
+
+    // Constrain the elements
+    this.petalThickness = constrain(this.petalThickness, 0, this.maxPetalThickness);
+    this.size = constrain(this.size, 0, this.maxSize);
   }
 
   // display()
@@ -49,6 +80,6 @@ class Flower {
       // And also change its y position so it grows upward! (If we didn't do this
       // the then stem would grow downward, which would look weird.)
       this.y = this.y - 5;
-    } 
-}
+    }
+  }
 }
