@@ -14,7 +14,20 @@ let cairoRegular;
 
 // Initial state
 let state = `title`;
-// Player circle controlled with the mouse
+
+// Our garden
+let garden = {
+  // An array to store the individual flowers
+  flowers: [],
+  // How many flowers in the garden
+  numFlowers: 20,
+  // The color of the grass (background)
+  grassColor: {
+    r: 120,
+    g: 180,
+    b: 120
+  }
+};
 
 // Loading images and text font
 function preload() {
@@ -24,6 +37,30 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth,windowHeight);
+  // Create our flowers by counting up to the number of the flowers
+  for (let i = 0; i < garden.numFlowers; i++) {
+    // Create variables for our arguments for clarity
+    let x = random(0, width);
+    let y = random(0, height);
+    let size = random(50, 80);
+    let stemLength = random(50, 100);
+    let petalColor = {
+      r: random(100, 255),
+      g: random(100, 255),
+      b: random(100, 255)
+    }
+    // Create a new flower using the arguments
+    let flower = new Flower(x, y, size, stemLength, petalColor);
+    // Add the flower to the array of flowers
+    garden.flowers.push(flower);
+  }
+  garden.flowers.sort(sortByY);
+}
+
+function sortByY(flower1, flower2) {
+  // We achieve the above by subtracting flower2's y position
+  // from flower1's! How elegant!
+  return flower1.y - flower2.y;
 }
 
 function draw() {
@@ -47,14 +84,21 @@ function draw() {
 }
 
 function title() {
-  background(0);
+  background(garden.grassColor.r, garden.grassColor.g, garden.grassColor.b);
+
+  // Loop through all the flowers in the array and display them
+  for (let i = 0; i < garden.flowers.length; i++) {
+    let flower = garden.flowers[i];
+    flower.display();
+  }
+
   fill(255);
   textAlign(CENTER, CENTER);
 
   push();
   textFont(cairoBlack);
   textSize(200);
-  text(`Age of Aquarium`, width / 2, height / 3);
+  text(`Juggle Garden`, width / 2, height / 3);
   pop();
 
   push();
@@ -70,7 +114,13 @@ function title() {
 }
 
 function game(){
-  background(63,116,254);
+  background(garden.grassColor.r, garden.grassColor.g, garden.grassColor.b);
+
+  // Loop through all the flowers in the array and display them
+  for (let i = 0; i < garden.flowers.length; i++) {
+    let flower = garden.flowers[i];
+    flower.display();
+  }
   noStroke();
 
   
@@ -129,5 +179,13 @@ function keyPressed() {
 function mousePressed() {
   if (state = 'title') {
     state = 'game';
+  }
+  if (state = 'game') {
+    for (let i = 0; i < garden.flowers.length; i++) {
+      // Get the current flower in the loop
+      let flower = garden.flowers[i];
+      // Call the flower's mousePressed() method
+      flower.mousePressed();
+    }
   }
 }
