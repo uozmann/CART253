@@ -1,99 +1,77 @@
-// Exercise4: Age of Aquarium
+// Prototype Project 2: The maze
 // Man Zou
-// The goal: enter in the big white circle (lover) while avoiding to touch the blue circle (ennemy)
 
-// Allow the user to control one of the circles: white circle controlled with mouse
-// Make the non-user circle move differently: the ennemy circle (blue) moves up and down (Perlin noise); the lover circle moves in the round (cos and sin functions)
-// Add at least one extra function: title, game, ending, ending2
-// Add at least one extra ending: 2 ending, one winner ending and one loser ending
 
 "use strict";
+
 // Fonts
-let cairoBlack;
+let irishGroverRegular;
 let cairoRegular;
+let caveatRegular;
+let poiretRegular;
+let bg = {
+  cave: undefined,
+};
+let lineCave = [`Where am I...(click to continue)`, `A dead corpse (click to continue)`, `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. (click to continue)`,]
+let currentLine = 0;
 
 // Initial state
 let state = `title`;
-let gameOverTimer = 0;
-let gameLength = 60 * 10; // 10 seconds
+let purple = {
+  r: 145, 
+  g: 40, 
+  b: 200,
+};
+let white = {
+  r: 255, 
+  g: 254, 
+  b: 245,
+};
+let yellow = {
+  r: 255, 
+  g: 245, 
+  b: 110,
+};
+let mazeBlocks = [];
+let numMazeBlocks = 35;
 
+let soul = {
+  x: 100,
+  y: 50,
+  size: 20,
+};
 
-// Our garden
-let garden = {
-  // An array to store the individual flowers
-  flowers: [],
-  numFlowers: 20,
-  // An array to store the individual bees
-  bees: [],
-  numBees: 20,
-  // An array to store the individual giant bees the player controles
-  giantBees: [],
-  numGiantBees: 10,
-
-  // giantBees: [],
-  // numBees: 1,
-  // The color of the grass (background)
-  grassColor: {
-    r: 120,
-    g: 180,
-    b: 120
-  }
+let rotationButton = {
+  x: 1000,
+  y: 550,
+  size: 50,
 };
 
 // Loading images and text font
 function preload() {
-  cairoBlack = loadFont(`assets/fonts/Cairo/Cairo-Black.ttf`);
+  irishGroverRegular = loadFont(`assets/fonts/Irish Grover/IrishGrover-Regular.ttf`); 
   cairoRegular = loadFont(`assets/fonts/Cairo/Cairo-Regular.ttf`);
+  caveatRegular = loadFont(`assets/fonts/Caveat/Caveat-Regular.ttf`); 
+  poiretRegular = loadFont(`assets/fonts/Poiret/PoiretOne-Regular.ttf`); 
+  bg.cave = loadImage(`assets/images/bgcave.jpg`);
 }
 
 function setup() {
   createCanvas(windowWidth,windowHeight);
-  // Create our flowers by counting up to the number of the flowers
-  for (let i = 0; i < garden.numFlowers; i++) {
-    // Create variables for our arguments for clarity
-    let x = random(0, width);
-    let y = random(0, height);
-    let size = random(50, 80);
-    let stemLength = random(50, 100);
-    let petalColor = {
-      r: random(100, 255),
-      g: random(100, 255),
-      b: random(100, 255)
+  let x = 0;
+  let y = 5;
+  let xDisplacement = 220
+  let yDisplacement = 250
+  for (let i = 0; i < numMazeBlocks; i++) {
+    x += xDisplacement;
+    if (x>= width - 150) {
+      x = 0;
+      y += yDisplacement;
     }
-    // Create a new flower using the arguments
-    let flower = new Flower(x, y, size, stemLength, petalColor);
-    // Add the flower to the array of flowers
-    garden.flowers.push(flower);
-  }
-  garden.flowers.sort(sortByY);
-  // Create our bees by counting up to the number of bees
-  for (let i = 0; i < garden.numBees; i++) {
-    // Create variables for our arguments for clarity
-    let x = random(0, width);
-    let y = random(0, height);
-    // Create a new bee using the arguments
-    let bee = new Bee(x, y);
-    // Add the bee to the array of bees
-    garden.bees.push(bee);
+    let mazeBlock = new MazeStandard(x, y);
+    mazeBlocks.push(mazeBlock);
   }
 
-  // Create our bees by counting up to the number of bees
-  for (let i = 0; i < garden.numGiantBees; i++) {
-    // Create variables for our arguments for clarity
-    let x = random(0, width);
-    let y = random(0, height);
-    // Create a new bee using the arguments
-    let giantBee = new GiantBee(x, y);
-    // Add the bee to the array of bees
-    garden.bees.push(giantBee);
-  }
-
-}
-
-function sortByY(flower1, flower2) {
-  // We achieve the above by subtracting flower2's y position
-  // from flower1's! How elegant!
-  return flower1.y - flower2.y;
 }
 
 function draw() {
@@ -102,193 +80,183 @@ function draw() {
     title();
     break;
 
-  case `game`:
-    game();
+  case `cave`:
+    cave();
+    break;
+
+  case `maze`:
+    maze();
+    break;
+
+  case `clue1`:
+    clue1();
+    break;
+
+  case `clue2`:
+    clue2();
+    break;
+
+  case `clue3`:
+    clue3();
+    break;
+
+  case `clue4`:
+    clue4();
+    break;
+
+  case `clue5`:
+    clue5();
     break;
 
   case `ending`:
     ending();
     break;
-
-  case `ending2`:
-    ending2();
+  
+  case `narrative`:
+    narrative();
     break;
   }
+
 }
 
 function title() {
-  background(garden.grassColor.r, garden.grassColor.g, garden.grassColor.b);
-
-  // Loop through all the flowers in the array and display them
-  for (let i = 0; i < garden.flowers.length; i++) {
-    let flower = garden.flowers[i];
-    flower.display();
-  }
+  background(purple.r, purple.g, purple.b);
 
   fill(255);
   textAlign(CENTER, CENTER);
 
   push();
-  textFont(cairoBlack);
+  textFont(irishGroverRegular);
   textSize(200);
-  text(`Survival Garden`, width / 2, height / 3);
+  text(`The Maze`, width / 2, height / 3);
   pop();
 
   push();
-  textFont(cairoRegular);
+  textFont(poiretRegular);
   textSize(32);
-  text(`Try to grow again the flowers by pressing on them`, width/2, height/2 );
+  text(`A tale of the Cloud of Eternal Sorrow re-imagined`, width/2, height/2 );
   pop();
 
   push();
-  textFont(cairoRegular);
+  textFont(poiretRegular);
   textSize(24);
   text(`Press to Start`, width/2, height*3 / 4);
+  pop();
+}
+
+// A soul wakes up in a cave and see a dead corpse. He/she is wondering who he/she is; and to who the corpse belongs to. 
+function cave(){
+  background(purple.r, purple.g, purple.b);
+  // image(bg.cave, 0, 0, width, height);
+
+  push();
+  textFont(irishGroverRegular);
+  textSize(40);
+  text(`[There is going to be some background and characters here]`, width / 2, height / 3);
+  pop();
   
+  push();
+  let dialog = lineCave[currentLine];
+  textFont(poiretRegular);
+  textSize(32);
+  fill(0);
+  text(dialog, width/2, height*7/8 );
   pop();
 
-  let dStartGame = dist(mouseX, mouseY, width/5, height*3 / 4);
-  if(dStartGame < 10) {
-    state = 'game';
+  if (currentLine === lineCave.length) {
+    state = 'maze';
   }
 }
 
-function game(){
-  background(garden.grassColor.r, garden.grassColor.g, garden.grassColor.b);
+// The soul then tries to leave the cave and falls under a maze. The walls of the maze are all moving depending on the time. The soul will need to find clues hinting at their identities.
+function maze(){
+  background(white.r, white.g, white.b);
 
-  // Loop through all the flowers in the array and display them
-  for (let i = 0; i < garden.flowers.length; i++) {
-    let flower = garden.flowers[i];
-    if (flower.alive) {
-      // Update the flower by shrinking it and displaying it
-      flower.shrink(); // NEW! Shrink living flowers every frame
-      flower.display();
+  push();
+  noStroke();
+  fill(yellow.r, yellow.g, yellow.b);
+  ellipse(soul.x, soul.y, soul.size);
+  // Keyboard Command
+  if (keyIsDown(65)) {
+    soul.x += -5;
+  }
+  if (keyIsDown(68)) {
+    soul.x += 5;
+  }
+  if (keyIsDown(83)) {
+    soul.y += 5;
+  }
+  if (keyIsDown(87)) {
+    soul.y += -5;
+  }
+  pop();
+
+  push();
+  fill(purple.r, purple.g, purple.b);
+  ellipse(rotationButton.x, rotationButton.y, rotationButton.size);
+  pop();
+
+  // display the maze
+  for (let i = 0; i < mazeBlocks.length; i++) {
+    let mazeblock = mazeBlocks[i];
+    mazeblock.display();
+    let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
+    if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
+    mazeblock.rotate();
     }
   }
+
   
-  // Loop through all the bees in the array and display them
-  for (let i = 0; i < garden.bees.length; i++) {
-    let bee = garden.bees[i];
-    // Check if this bee is alive
-    if (bee.alive) {
-      // Update the bee by shrinking, moving and displaying it
-      bee.shrink();
-      bee.move();
-      for (let j = 0; j < garden.flowers.length; j++) {
-        let flower = garden.flowers[j];
-        bee.tryToPollinate(flower);
-      }
-
-      bee.display();
-    }
-  }
-
-  for (let i = 0; i < garden.giantBees.length; i++) {
-    let giantBee = garden.giantBees[i];
-    // Check if this bee is alive
-    if (giantBee.alive) {
-      // Update the bee by shrinking, moving and displaying it
-      giantBee.shrink();
-      giantBee.move();
-      for (let j = 0; j < garden.bees.length; j++) {
-        let bee = garden.bees[j];
-        giantBee.poisoned(bee);
-      }
-      giantBee.display();
-    } 
-  }
-
-  gameOverTimer++;
-  // NEW! Check if we have reached the end of our timer
-  if (gameOverTimer >= gameLength) {
-    // The game is over! So we should check the win/lose state
-    gameOver();
-  }
-
-
+  
 }
 
-function gameOver() {
-  if (garden.flowers.numAlive >= 10) {
-    // There are no circles left, so the user won!
-    state = `ending`;
-  }
-  else {
-    // Otherwise they lost
-    state = `ending2`;
-  }
+// [the princess meets the boy]
+function clue1(){
+  background(purple.r, purple.g, purple.b);
 }
 
-// Good ending
+// [the princess being carried to the cave by the boy]
+function clue2(){
+  background(purple.r, purple.g, purple.b);
+}
+
+// [the king asking the priest to get the princess]
+function clue3(){
+  background(purple.r, purple.g, purple.b);
+}
+
+// [the boy going back to the palace to get the treasure cloth]
+function clue4(){
+  background(purple.r, purple.g, purple.b);
+}
+
+// [the boy petrified by the priest]
+function clue5(){
+  background(purple.r, purple.g, purple.b);
+}
+
+// The soul exit the maze and sees itself again in its dear country. She remembers who she is (the princess), and flies to the sky. Her sad tears became the rain pouring  on Er Hai
 function ending(){
-  background(garden.grassColor.r, garden.grassColor.g, garden.grassColor.b);
-
-  // Loop through all the flowers in the array and display them
-  for (let i = 0; i < garden.flowers.length; i++) {
-    let flower = garden.flowers[i];
-    flower.display();
-  }
-
-  push();
-  textFont(cairoBlack);
-  textSize(200);
-  text(`Flowers won!`, width / 2, height / 3);
-  pop();
-
-  push();
-  textFont(cairoRegular);
-  textSize(24);
-  text(`The majority of your flowers have not been eaten by bees`, width/2, height*2 / 3);
-  text(`Press "CTRL + R" to restart`, width/2, height*3/4);
-  pop();
-
-  noLoop();
+  background(purple.r, purple.g, purple.b);
 }
 
-// Bad ending
-function ending2(){
-  background(garden.grassColor.r, garden.grassColor.g, garden.grassColor.b);
-
-  // Loop through all the flowers in the array and display them
-  for (let i = 0; i < garden.flowers.length; i++) {
-    let flower = garden.flowers[i];
-    flower.display();
-  }
-
-  push();
-  textFont(cairoBlack);
-  textSize(200);
-  text(`Bees won!`, width / 2, height / 3);
-  pop();
-
-  push();
-  textFont(cairoRegular);
-  textSize(24);
-  text(`Your bees have managed to eat most of the flowers`, width/2, height*2 / 3);
-  text(`Press "CTRL + R" to restart`, width/2, height*3/4);
-  pop();
-
-  noLoop();
+// The real legend is written.
+function narrative(){
+  background(purple.r, purple.g, purple.b);
 }
 
-// Return to the title page
 function keyPressed() {
-  let giantBee1 = giantBees[0];
-  if (key === 'd') {
-    giantBee1.x = 500;
-  }
+ 
 }
 
 function mousePressed() {
-  if (state = 'title') {
-    state = 'game';
+  if (state === 'title') {
+    state = 'cave';
   }
-  if (state = 'game') {
-    for (let i = 0; i < garden.flowers.length; i++) {
-      // Get the current flower in the loop
-      let flower = garden.flowers[i];
-      // Call the flower's mousePressed() method
-      flower.mousePressed();
-    }
+  if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5') {
+    currentLine = currentLine + 1;
   }
+  // if (state === 'maze') {
+  //   state = 'ending';
+  // }
 }
