@@ -10,8 +10,11 @@ class MazeStandard {
       this.alpha = 255;
     }
 
-    rotate() {
-      this.rotation = 90;
+    move() {
+      this.x + 50;
+      this.y + -10;
+      this.longueur = 50;
+      this.courteLongueur = 100;
     }
 
     collision() {

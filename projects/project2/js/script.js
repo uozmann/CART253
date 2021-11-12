@@ -247,7 +247,7 @@ function maze(){
     // Check if the player (soul) touches the rotation button and trigger rotation of the maze walls
     let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
     if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
-    mazeblock.rotate();
+    mazeblock.move();
     }
   }
 
@@ -445,7 +445,5 @@ function mousePressed() {
   if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5') {
     currentLine = currentLine + 1;
   }
-  // if (state === 'maze') {
-  //   state = 'ending';
-  // }
+
 }
