@@ -7,7 +7,7 @@ class ClueButton {
       this.state = state;
     }
   
-     //One block of labyrinth
+     // display the clue button in colour
     display() {
       push();
       fill(grey.r, grey.g, grey.b);

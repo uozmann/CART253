@@ -1,6 +1,18 @@
 // Prototype Project 2: The maze
 // Man Zou
 
+// Instructions
+// When in narration phase, simply mouse click to go through the storyline
+// When in the maze, use "awsd" to move; the smaller yellow circle will open the maze so it is easier to move across; the bigger grey circle are clues to pursue the storyline.
+
+// Sources
+// Codes come from CART253's course content and my own exploration
+// All visuals come from myself
+// Sounds come from the open-source platform Aigei.com
+
+// States functions
+// title(); cave(); maze(); clue1(); clue2(); clue3(); clue4(); clue5(); ending(); narrative();
+
 
 "use strict";
 
@@ -74,6 +86,7 @@ let soul = {
   vx: 5,
   vy: 5,
 };
+
 // Parameter to check collision
 let soulTouchesMaze = false;
 // Trigger for maze rotation
@@ -82,6 +95,7 @@ let rotationButton = {
   y: 550,
   size: 50,
 };
+
 // Trigger for clue narratives
 let clueButtonTouched = false;
 let clueButtons = [];
@@ -125,7 +139,7 @@ function setup() {
     mazeBlocks.push(mazeBlock);
   }
 
-  // New!! IN WORK
+  // Setting up the buttons for clues
   randomSeed(3);
   for (let i=0; i < numClueButtons; i++) {
     let x = random(0, width);
@@ -229,7 +243,7 @@ function cave(){
   pop();
 
   if (currentLine === lineCave.length) {
-    state = 'maze';
+    state = 'maze'; //when the dialog finishes go to the next state
   }
 }
 
@@ -258,7 +272,7 @@ function maze(){
   }
   pop();
 
-  // Trigger button for maze rotation
+  // Display trigger button for maze rotation
   push();
   fill(yellow.r, yellow.g, yellow.b);
   ellipse(rotationButton.x, rotationButton.y, rotationButton.size);
@@ -502,15 +516,18 @@ function keyPressed() {
 }
 
 function mousePressed() {
+  //start game
   if (state === 'title') {
     state = 'cave';
     bgm.story.loop();
   }
   
+  // count the dialog length
   if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5') {
     currentLine = currentLine + 1;
   }
 
+  // optional music change
   if (state === 'maze') {
     bgm.maze.loop();
     bgm.story.stop();
