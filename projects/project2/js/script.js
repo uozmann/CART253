@@ -24,6 +24,7 @@ let dialogBox = {
 let bgm = {
   story: undefined,
   maze: undefined,
+  collision: undefined,
 }
 
 // Story text arrays
@@ -102,6 +103,7 @@ function preload() {
   dialogBox = loadImage(`assets/images/ui_dialogbox.png`); 
   bgm.story = loadSound(`assets/sounds/bgm_magicforest.mp3`); 
   bgm.maze = loadSound(`assets/sounds/bgm_maze.mp3`);
+  bgm.collision = loadSound(`assets/sounds/bgm_collision.mp3`);
 }
 
 function setup() {
@@ -209,6 +211,7 @@ function cave(){
   background(purple.r, purple.g, purple.b);
   // image(bg.cave, 0, 0, width, height);
   fill(white.r, white.g, white.b);
+  
 
   push();
   textFont(irishGroverRegular);
@@ -272,6 +275,7 @@ function maze(){
       soul.x = 100;
       soul.y = 50;
       mazeblock.opacity();
+      bgm.collision.play();
     }
     
     // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
@@ -500,9 +504,16 @@ function keyPressed() {
 function mousePressed() {
   if (state === 'title') {
     state = 'cave';
+    bgm.story.loop();
   }
+  
   if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5') {
     currentLine = currentLine + 1;
+  }
+
+  if (state === 'maze') {
+    bgm.maze.loop();
+    bgm.story.stop();
   }
 
 }
