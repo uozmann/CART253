@@ -197,21 +197,23 @@ function draw() {
 // Home Page
 function title() {
   background(purple.r, purple.g, purple.b);
-
   fill(255);
   textAlign(CENTER, CENTER);
+
   // Header
   push();
   textFont(irishGroverRegular);
   textSize(200);
   text(`The Maze`, width / 2, height / 3);
   pop();
+
   // Paragraph
   push();
   textFont(poiretRegular);
   textSize(32);
   text(`A tale of the Cloud of Eternal Sorrow re-imagined`, width/2, height/2 );
   pop();
+
   // Paragraph
   push();
   textFont(poiretRegular);
@@ -337,6 +339,7 @@ function maze(){
 // [the princess meets the man]
 function clue1(){
   background(purple.r, purple.g, purple.b);
+  fill(255);
   clue1Viewed = true;
 
 
@@ -364,6 +367,7 @@ function clue1(){
 // [the princess being carried to the cave by the man]
 function clue2(){
   background(purple.r, purple.g, purple.b);
+  fill(255);
   clue2Viewed = true;
 
   push();
@@ -390,6 +394,7 @@ function clue2(){
 // [the king asking the priest to get the princess]
 function clue3(){
   background(purple.r, purple.g, purple.b);
+  fill(255);
   clue3Viewed = true;
 
   push();
@@ -416,6 +421,7 @@ function clue3(){
 // [the man going back to the palace to get the treasure cloth]
 function clue4(){
   background(purple.r, purple.g, purple.b);
+  fill(255);
   clue4Viewed = true;
 
   push();
@@ -442,6 +448,7 @@ function clue4(){
 // [the man petrified by the priest]
 function clue5(){
   background(purple.r, purple.g, purple.b);
+  fill(255);
   clue5Viewed = true;
 
   push();
@@ -468,7 +475,6 @@ function clue5(){
 // The soul exit the maze and sees itself again in its dear country. She remembers who she is (the princess), and flies to the sky. Her sad tears became the rain pouring  on Er Hai
 function ending(){
   background(purple.r, purple.g, purple.b);
-
   fill(white.r, white.g, white.b);
 
   push();
@@ -495,6 +501,7 @@ function ending(){
 // The real legend is written.
 function narrative(){
   background(purple.r, purple.g, purple.b);
+  fill(255);
 
   // Header
   push();
