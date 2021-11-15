@@ -22,7 +22,7 @@ class MazeStandard {
     }
 
     opacity() {
-      this.alpha += -50;
+      this.alpha += -100;
     }
 
 
