@@ -13,6 +13,9 @@
 // States functions
 // title(); cave(); maze(); clue1(); clue2(); clue3(); clue4(); clue5(); ending(); narrative();
 
+// Question: simplifying clues? States and arrays? (js:333)
+
+
 
 "use strict";
 
@@ -25,7 +28,14 @@ let poiretRegular;
 // Images
 let bg = {
   cave: undefined,
+  x: undefined,
+  y: undefined,
 };
+let character = {
+  soul: undefined,
+  soulX: undefined,
+  soulY: undefined,
+}
 let dialogBox = {
   x: undefined,
   y: undefined,
@@ -37,6 +47,7 @@ let bgm = {
   story: undefined,
   maze: undefined,
   collision: undefined,
+  hasStarted: false,
 }
 
 // Story text arrays
@@ -101,11 +112,12 @@ let clueButtonTouched = false;
 let clueButtons = [];
 let numClueButtons = 5;
 let clueStates = [`clue1`, `clue2`, `clue3`, `clue4`, `clue5`];
-let clue1Viewed = false;
-let clue2Viewed = false;
-let clue3Viewed = false;
-let clue4Viewed = false;
-let clue5Viewed = false;
+// let clue1Viewed = false;
+// let clue2Viewed = false;
+// let clue3Viewed = false;
+// let clue4Viewed = false;
+// let clue5Viewed = false;
+let clues = [];
 
 // Loading images and text font
 function preload() {
@@ -114,6 +126,7 @@ function preload() {
   caveatRegular = loadFont(`assets/fonts/Caveat/Caveat-Regular.ttf`); 
   poiretRegular = loadFont(`assets/fonts/Poiret/PoiretOne-Regular.ttf`); 
   bg.cave = loadImage(`assets/images/bgcave.jpg`);
+  character.soul = loadImage(`assets/images/character-soul.png`); 
   dialogBox = loadImage(`assets/images/ui_dialogbox.png`); 
   bgm.story = loadSound(`assets/sounds/bgm_magicforest.mp3`); 
   bgm.maze = loadSound(`assets/sounds/bgm_maze.mp3`);
@@ -135,7 +148,15 @@ function setup() {
       x = 0;
       y += yDisplacement;
     }
-    let mazeBlock = new MazeStandard(x, y);
+    let randomNumber = random(0, 100);
+    let mazeBlock;
+    if (randomNumber > 75) {
+      mazeBlock = new MazeStandard(x, y, true);
+    }
+    else {
+      mazeBlock = new MazeStandard(x, y, false);
+    }
+    
     mazeBlocks.push(mazeBlock);
   }
 
@@ -147,6 +168,14 @@ function setup() {
     let clueButton = new ClueButton(x, y, clueStates[i]);
     clueButtons.push(clueButton);
   }
+
+  // Clues
+  clues[0] = new Clue(1, lineClue1);
+  clues[1] = new Clue(2, lineClue2);
+  clues[2] = new Clue(3, lineClue3);
+  clues[3] = new Clue(4, lineClue4);
+  clues[4] = new Clue(5, lineClue5);
+
 
 }
 
@@ -165,23 +194,28 @@ function draw() {
     break;
 
   case `clue1`:
-    clue1();
+    // clue1();
+    clues[0].display();
     break;
 
   case `clue2`:
-    clue2();
+    // clue2();
+    clues[1].display();
     break;
 
   case `clue3`:
-    clue3();
+    // clue3();
+    clues[2].display();
     break;
 
   case `clue4`:
-    clue4();
+    // clue4();
+    clues[3].display();
     break;
 
   case `clue5`:
-    clue5();
+    // clue5();
+    clues[4].display();
     break;
 
   case `ending`:
@@ -225,9 +259,18 @@ function title() {
 // A soul wakes up in a cave and see a dead corpse. He/she is wondering who he/she is; and to who the corpse belongs to. 
 function cave(){
   background(purple.r, purple.g, purple.b);
-  // image(bg.cave, 0, 0, width, height);
   fill(white.r, white.g, white.b);
+
+  push();
+  imageMode(CENTER);
+  bg.x = map(mouseX, 0, width, 700, width-700);
+  bg.y = map(mouseY, 0, height, 200, height-200);
+  image(bg.cave, bg.x, bg.y, );
+  character.soulX = map(mouseX, 0, width, 1400, 1600);
+  character.soulY = map(mouseY, 0, height, 400, 600);
+  image(character.soul, character.soulX, character.soulY);
   
+  pop();
 
   push();
   textFont(irishGroverRegular);
@@ -251,6 +294,11 @@ function cave(){
 
 // The soul then tries to leave the cave and falls under a maze. The walls of the maze are all moving depending on the time. The soul will need to find clues hinting at their identities.
 function maze(){
+  if (bgm.hasStarted === false) {
+    bgm.hasStarted = true;
+    bgm.maze.loop();
+    bgm.story.stop();
+  }
   background(0);
   noStroke();
   currentLine = 0;
@@ -297,7 +345,10 @@ function maze(){
     // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
     let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
     if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
-    mazeblock.move();
+    mazeblock.startMove = true;
+    }
+    if (mazeblock.startMove === true) {
+      mazeblock.move();
     }
   }
 
@@ -328,7 +379,7 @@ function maze(){
     }
   }
 
-  if (clue1Viewed && clue2Viewed && clue3Viewed && clue4Viewed && clue5Viewed) {
+  if (clues[0].clueViewed && clues[1].clueViewed && clues[2].clueViewed && clues[3].clueViewed && clues[4].clueViewed) {
     // All and each of the clues are viewed?
     state = 'ending';
   }
@@ -337,140 +388,140 @@ function maze(){
 
 
 // [the princess meets the man]
-function clue1(){
-  background(purple.r, purple.g, purple.b);
-  fill(255);
-  clue1Viewed = true;
+// function clue1(){
+//   background(purple.r, purple.g, purple.b);
+//   fill(255);
+//   clue1Viewed = true;
 
 
-  push();
-  textFont(irishGroverRegular);
-  textSize(40);
-  text(`[Clue narratives 1]`, width / 2, height / 3);
-  pop();
+//   push();
+//   textFont(irishGroverRegular);
+//   textSize(40);
+//   text(`[Clue narratives 1]`, width / 2, height / 3);
+//   pop();
 
-  // Dialog text
-  push();
-  image(dialogBox, 0, 0, width, height);
-  let dialogClue1 = lineClue1[currentLine];
-  textFont(poiretRegular);
-  textSize(32);
-  text(dialogClue1, width/2, height*7/8 );
-  pop();
+//   // Dialog text
+//   push();
+//   image(dialogBox, 0, 0, width, height);
+//   let dialogClue1 = lineClue1[currentLine];
+//   textFont(poiretRegular);
+//   textSize(32);
+//   text(dialogClue1, width/2, height*7/8 );
+//   pop();
 
-  if (currentLine === lineClue1.length) {
-    state = 'maze'; 
-  }
+//   if (currentLine === lineClue1.length) {
+//     state = 'maze'; 
+//   }
 
-}
+// }
 
 // [the princess being carried to the cave by the man]
-function clue2(){
-  background(purple.r, purple.g, purple.b);
-  fill(255);
-  clue2Viewed = true;
+// function clue2(){
+//   background(purple.r, purple.g, purple.b);
+//   fill(255);
+//   clue2Viewed = true;
 
-  push();
-  textFont(irishGroverRegular);
-  textSize(40);
-  text(`[Clue narratives 2]`, width / 2, height / 3);
-  pop();
+//   push();
+//   textFont(irishGroverRegular);
+//   textSize(40);
+//   text(`[Clue narratives 2]`, width / 2, height / 3);
+//   pop();
 
-  // Dialog text
-  push();
-  image(dialogBox, 0, 0, width, height);
-  let dialogClue2 = lineClue2[currentLine];
-  textFont(poiretRegular);
-  textSize(32);
-  text(dialogClue2, width/2, height*7/8 );
-  pop();
+//   // Dialog text
+//   push();
+//   image(dialogBox, 0, 0, width, height);
+//   let dialogClue2 = lineClue2[currentLine];
+//   textFont(poiretRegular);
+//   textSize(32);
+//   text(dialogClue2, width/2, height*7/8 );
+//   pop();
 
-  if (currentLine === lineClue2.length) {
-    state = 'maze';
-  }
+//   if (currentLine === lineClue2.length) {
+//     state = 'maze';
+//   }
 
-}
+// }
 
 // [the king asking the priest to get the princess]
-function clue3(){
-  background(purple.r, purple.g, purple.b);
-  fill(255);
-  clue3Viewed = true;
+// function clue3(){
+//   background(purple.r, purple.g, purple.b);
+//   fill(255);
+//   clue3Viewed = true;
 
-  push();
-  textFont(irishGroverRegular);
-  textSize(40);
-  text(`[Clue narratives 3]`, width / 2, height / 3);
-  pop();
+//   push();
+//   textFont(irishGroverRegular);
+//   textSize(40);
+//   text(`[Clue narratives 3]`, width / 2, height / 3);
+//   pop();
 
-  // Dialog text
-  push();
-  image(dialogBox, 0, 0, width, height);
-  let dialogClue3 = lineClue3[currentLine];
-  textFont(poiretRegular);
-  textSize(32);
-  text(dialogClue3, width/2, height*7/8 );
-  pop();
+//   // Dialog text
+//   push();
+//   image(dialogBox, 0, 0, width, height);
+//   let dialogClue3 = lineClue3[currentLine];
+//   textFont(poiretRegular);
+//   textSize(32);-
+//   text(dialogClue3, width/2, height*7/8 );
+//   pop();
 
-  if (currentLine === lineClue3.length) {
-    state = 'maze';
-  }
+//   if (currentLine === lineClue3.length) {
+//     state = 'maze';
+//   }
 
-}
+// }
 
 // [the man going back to the palace to get the treasure cloth]
-function clue4(){
-  background(purple.r, purple.g, purple.b);
-  fill(255);
-  clue4Viewed = true;
+// function clue4(){
+//   background(purple.r, purple.g, purple.b);
+//   fill(255);
+//   clue4Viewed = true;
 
-  push();
-  textFont(irishGroverRegular);
-  textSize(40);
-  text(`[Clue narratives 4]`, width / 2, height / 3);
-  pop();
+//   push();
+//   textFont(irishGroverRegular);
+//   textSize(40);
+//   text(`[Clue narratives 4]`, width / 2, height / 3);
+//   pop();
 
-  // Dialog text
-  push();
-  image(dialogBox, 0, 0, width, height);
-  let dialogClue4 = lineClue4[currentLine];
-  textFont(poiretRegular);
-  textSize(32);
-  text(dialogClue4, width/2, height*7/8 );
-  pop();
+//   // Dialog text
+//   push();
+//   image(dialogBox, 0, 0, width, height);
+//   let dialogClue4 = lineClue4[currentLine];
+//   textFont(poiretRegular);
+//   textSize(32);
+//   text(dialogClue4, width/2, height*7/8 );
+//   pop();
 
-  if (currentLine === lineClue4.length) {
-    state = 'maze';
-  }
+//   if (currentLine === lineClue4.length) {
+//     state = 'maze';
+//   }
 
-}
+// }
 
 // [the man petrified by the priest]
-function clue5(){
-  background(purple.r, purple.g, purple.b);
-  fill(255);
-  clue5Viewed = true;
+// function clue5(){
+//   background(purple.r, purple.g, purple.b);
+//   fill(255);
+//   clue5Viewed = true;
 
-  push();
-  textFont(irishGroverRegular);
-  textSize(40);
-  text(`[Clue narratives 5]`, width / 2, height / 3);
-  pop();
+//   push();
+//   textFont(irishGroverRegular);
+//   textSize(40);
+//   text(`[Clue narratives 5]`, width / 2, height / 3);
+//   pop();
 
-  // Dialog text
-  push();
-  image(dialogBox, 0, 0, width, height);
-  let dialogClue5 = lineClue5[currentLine];
-  textFont(poiretRegular);
-  textSize(32);
-  text(dialogClue5, width/2, height*7/8 );
-  pop();
+//   // Dialog text
+//   push();
+//   image(dialogBox, 0, 0, width, height);
+//   let dialogClue5 = lineClue5[currentLine];
+//   textFont(poiretRegular);
+//   textSize(32);
+//   text(dialogClue5, width/2, height*7/8 );
+//   pop();
 
-  if (currentLine === lineClue5.length) {
-    state = 'maze';
-  }
+//   if (currentLine === lineClue5.length) {
+//     state = 'maze';
+//   }
 
-}
+// }
 
 // The soul exit the maze and sees itself again in its dear country. She remembers who she is (the princess), and flies to the sky. Her sad tears became the rain pouring  on Er Hai
 function ending(){
@@ -532,12 +583,6 @@ function mousePressed() {
   // count the dialog length
   if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5') {
     currentLine = currentLine + 1;
-  }
-
-  // optional music change
-  if (state === 'maze') {
-    bgm.maze.loop();
-    bgm.story.stop();
   }
 
 }

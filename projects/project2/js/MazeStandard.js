@@ -1,21 +1,24 @@
 class MazeStandard {
 
-    constructor(x, y) {
+    constructor(x, y, showFourth) {
       this.x = x;
       this.y = y;
       this.size = 30;
       this.longueur = 150; //for longer walls
       this.courteLongueur = 100; //for shorter walls
+      this.fourthLongueur = 50;
       this.largeur = 10;
       this.alpha = 255;
+      this.startMove = false;
+      this.showFourthWall = showFourth;
     }
 
     move() {
       // open-up the walls
-      this.x + 50;
-      this.y + -10;
-      this.longueur = 50;
-      this.courteLongueur = 100;
+      this.longueur = lerp(this.longueur, 50, 0.05);
+      if (this.longueur === 50) {
+        this.startMove = false;
+      }
     }
 
     collision() {
@@ -45,6 +48,10 @@ class MazeStandard {
       // third L shape
       rect(this.x + this.longueur + -this.largeur, this.y + this.courteLongueur/2, this.largeur, this.longueur);
       rect(this.x + this.longueur + -this.largeur, this.y + this.courteLongueur/2 + this.longueur, this.courteLongueur, this.largeur);
+      // forth ramdon wall
+      if (this.showFourthWall === true) {
+        rect(this.x + this.longueur + -this.largeur + this.courteLongueur, this.y + this.courteLongueur/2 + this.longueur, this.largeur, this.fourthLongueur);
+      }
       pop();
     }
   }
