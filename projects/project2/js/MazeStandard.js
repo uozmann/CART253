@@ -3,12 +3,16 @@ class MazeStandard {
     constructor(x, y, showFourth) {
       this.x = x;
       this.y = y;
-      this.size = 30;
-      this.longueur = 150; //for longer walls
-      this.courteLongueur = 100; //for shorter walls
-      this.fourthLongueur = 50;
-      this.largeur = 10;
+      this.startX = x;
+      this.startY = y;
+      this.size = 90;
+      this.longueur = 450; //for longer walls
+      this.startLongueur = 450;
+      this.courteLongueur = 300; //for shorter walls
+      this.fourthLongueur = 150;
+      this.largeur = 40;
       this.alpha = 255;
+      this.parallaxRatio = 1.1;
       this.startMove = false;
       this.showFourthWall = showFourth;
     }
@@ -19,6 +23,23 @@ class MazeStandard {
       if (this.longueur === 50) {
         this.startMove = false;
       }
+    }
+
+    parallax() {
+      //Moving the maze according to player's position
+        if (keyIsDown(65)) {
+          this.x += soul.vx*this.parallaxRatio;
+        }
+        if (keyIsDown(68)) {
+          this.x += -soul.vx*this.parallaxRatio;
+        }
+        if (keyIsDown(83)) {
+          this.y += -soul.vy*this.parallaxRatio;
+        }
+        if (keyIsDown(87)) {
+          this.y += soul.vy*this.parallaxRatio;
+        }
+
     }
 
     collision() {

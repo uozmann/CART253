@@ -1,21 +1,39 @@
 class ClueButton {
 
-    constructor(x, y, state) {
+    constructor(x, y, state, clueImage) {
       this.x = x; 
       this.y = y; 
-      this.size = 100;
+      this.size = 300;
       this.state = state;
+      this.image = clueImage;
+      this.parallaxRatio = 1.1;
+    }
+
+    parallax() {
+      //Moving the maze according to player's position
+        if (keyIsDown(65)) {
+          this.x += soul.vx*this.parallaxRatio;
+        }
+        if (keyIsDown(68)) {
+          this.x += -soul.vx*this.parallaxRatio;
+        }
+        if (keyIsDown(83)) {
+          this.y += -soul.vy*this.parallaxRatio;
+        }
+        if (keyIsDown(87)) {
+          this.y += soul.vy*this.parallaxRatio;
+        }
     }
   
      // display the clue button in colour
     display() {
       push();
-      fill(grey.r, grey.g, grey.b);
+      fill(0);
+      imageMode(CENTER);
 
       // Button shape
-      this.x = constrain(this.x, this.size/2, width - this.size/2);
-      this.y = constrain(this.y, this.size/2, height - this.size/2);
       ellipse(this.x, this.y, this.size);
+      image(this.image, this.x, this.y, this.size, this.size);
       pop();
     }
   }

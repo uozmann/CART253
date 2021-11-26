@@ -28,6 +28,7 @@ let poiretRegular;
 // Images
 let bg = {
   cave: undefined,
+  maze1: undefined,
   palace: undefined,
   x: undefined,
   y: undefined,
@@ -105,7 +106,7 @@ let numMazeBlocks = 35;
 let soul = {
   x: 100,
   y: 50,
-  size: 20,
+  size: 50,
   vx: 5,
   vy: 5,
 };
@@ -116,14 +117,16 @@ let soulTouchesMaze = false;
 let rotationButton = {
   x: 925,
   y: 550,
-  size: 50,
-};
+  size: 100,
+}
 
 // Trigger for clue narratives
 let clueButtonTouched = false;
 let clueButtons = [];
 let numClueButtons = 5;
 let clueStates = [`clue1`, `clue2`, `clue3`, `clue4`, `clue5`];
+let clueImages = [];
+let numClueImages = 5;
 let clues = [];
 
 // Loading images and text font
@@ -133,10 +136,15 @@ function preload() {
   caveatRegular = loadFont(`assets/fonts/Caveat/Caveat-Regular.ttf`); 
   poiretRegular = loadFont(`assets/fonts/Poiret/PoiretOne-Regular.ttf`); 
   bg.cave = loadImage(`assets/images/bgcave.jpg`);
+  bg.maze1 = loadImage(`assets/images/bgmaze1.png`);
   bg.palace = loadImage(`assets/images/bgpalace.jpg`);
   character.man = loadImage(`assets/images/character-man.png`); 
   character.princess = loadImage(`assets/images/character-princess.png`); 
   character.soul = loadImage(`assets/images/character-soul.png`); 
+  for (let i = 0; i < numClueImages; i++) { //images for Clue Buttons
+    let loadedImage = loadImage(`assets/images/clue-${i}.png`);
+    clueImages.push(loadedImage);
+  }
   dialogBox = loadImage(`assets/images/ui_dialogbox.png`); 
   bgm.story = loadSound(`assets/sounds/bgm_magicforest.mp3`); 
   bgm.maze = loadSound(`assets/sounds/bgm_maze.mp3`);
@@ -150,14 +158,15 @@ function setup() {
   // Setting up the maze walls
   let x = 0;
   let y = 5;
-  let xDisplacement = 220
-  let yDisplacement = 250
+  let xDisplacement = 660;
+  let yDisplacement = 750;
   for (let i = 0; i < numMazeBlocks; i++) {
     x += xDisplacement;
-    if (x>= width - 150) {
+    if (x>= width*2 - 450) {
       x = 0;
       y += yDisplacement;
     }
+    // Setting up a fourthwall depending on random blocks of maze
     let randomNumber = random(0, 100);
     let mazeBlock;
     if (randomNumber > 75) {
@@ -173,9 +182,9 @@ function setup() {
   // Setting up the buttons for clues
   randomSeed(3);
   for (let i=0; i < numClueButtons; i++) {
-    let x = random(0, width);
-    let y = random(0, height);
-    let clueButton = new ClueButton(x, y, clueStates[i]);
+    x = random(0, width + width/2);
+    y = random(0, height + height/2);
+    let clueButton = new ClueButton(x, y, clueStates[i], clueImages[i]);
     clueButtons.push(clueButton);
   }
 
@@ -333,35 +342,11 @@ function maze(){
   ellipse(rotationButton.x, rotationButton.y, rotationButton.size);
   pop();
 
-  // display the maze
-  for (let i = 0; i < mazeBlocks.length; i++) {
-    let mazeblock = mazeBlocks[i];
-    mazeblock.display();
-    mazeblock.collision();
-
-    // check if the player(soul) collides with walls of the rectangles and trigger transparency changes
-    if (soulTouchesMaze) {
-      soul.x = 100;
-      soul.y = 50;
-      mazeblock.opacity();
-      bgm.collision.play();
-    }
-    
-    // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
-    let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
-    if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
-    mazeblock.startMove = true;
-    }
-    if (mazeblock.startMove === true) {
-      mazeblock.move();
-    }
-  }
-
-
   // Display the clue Buttons
   for (let i=0; i < clueButtons.length; i++) {
     let clueButton = clueButtons[i];
     clueButton.display();
+    clueButton.parallax();
 
     // Check if the player (soul) touches the clue button and trigger clue narratives
     let dTriggerClue = dist(clueButton.x, clueButton.y, soul.x, soul.y);
@@ -383,11 +368,38 @@ function maze(){
       }
     }
   }
-
+  // All and each of the clues are viewed?
   if (clues[0].clueViewed && clues[1].clueViewed && clues[2].clueViewed && clues[3].clueViewed && clues[4].clueViewed) {
-    // All and each of the clues are viewed?
     state = 'ending';
   }
+
+  // display the maze
+  for (let i = 0; i < mazeBlocks.length; i++) {
+    let mazeblock = mazeBlocks[i];
+    mazeblock.display();
+    mazeblock.collision();
+    mazeblock.parallax();
+
+    // check if the player(soul) collides with walls of the rectangles and trigger transparency changes
+    if (soulTouchesMaze) {
+      soul.x = 100;
+      soul.y = 50;
+      mazeblock.opacity();
+      bgm.collision.play();
+    }
+    
+    // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
+    let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
+    if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
+    mazeblock.startMove = true;
+    }
+    if (mazeblock.startMove === true) {
+      mazeblock.move();
+    }
+  }
+
+  //Frame Borders of the maze
+  image(bg.maze1,0,0, width, height);
 
 }
 
