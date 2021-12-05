@@ -110,6 +110,9 @@ let soul = {
   vx: 5,
   vy: 5,
 };
+let numSoulTrace = 60; //trail num
+let pastSoulX = []; //trail coordinates
+let pastSoulY = []; //trail coordinates
 
 // Parameter to check collision
 let soulTouchesMaze = false;
@@ -194,6 +197,12 @@ function setup() {
   clues[2] = new Clue(3, lineClue3);
   clues[3] = new Clue(4, lineClue4);
   clues[4] = new Clue(5, lineClue5);
+
+  //Player trail
+  for (let i = 0; i < numSoulTrace; i++) {
+    pastSoulX.push(i);
+    pastSoulY.push(i);
+  }
 
 
 }
@@ -319,8 +328,15 @@ function maze(){
   // Player (soul) settings
   push();
   fill(yellow.r, yellow.g, yellow.b);
-  ellipse(soul.x, soul.y, soul.size);
-  // ellipse(soul.x, soul.y, character.soul);
+  let current = frameCount % numSoulTrace;
+  pastSoulX[current] = soul.x;
+  pastSoulY[current] = soul.y;
+
+  for (let i = 0; i < numSoulTrace; i++) {
+    // which+1 is the smallest (the oldest in the array)
+    let index = (current + 1 + i) % numSoulTrace;
+    ellipse(pastSoulX[index], pastSoulY[index], i, i);
+  }
   // Keyboard Command (awsd)
   if (keyIsDown(65)) {
     soul.x += -soul.vx;
@@ -341,6 +357,31 @@ function maze(){
   fill(yellow.r, yellow.g, yellow.b);
   ellipse(rotationButton.x, rotationButton.y, rotationButton.size);
   pop();
+
+  // display the maze
+  for (let i = 0; i < mazeBlocks.length; i++) {
+    let mazeblock = mazeBlocks[i];
+    mazeblock.display();
+    mazeblock.collision();
+    mazeblock.parallax();
+
+    // check if the player(soul) collides with walls of the rectangles and trigger transparency changes
+    if (soulTouchesMaze) {
+      soul.x = 100;
+      soul.y = 50;
+      mazeblock.opacity();
+      bgm.collision.play();
+    }
+    
+    // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
+    let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
+    if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
+    mazeblock.startMove = true;
+    }
+    if (mazeblock.startMove === true) {
+      mazeblock.move();
+    }
+  }
 
   // Display the clue Buttons
   for (let i=0; i < clueButtons.length; i++) {
@@ -371,31 +412,6 @@ function maze(){
   // All and each of the clues are viewed?
   if (clues[0].clueViewed && clues[1].clueViewed && clues[2].clueViewed && clues[3].clueViewed && clues[4].clueViewed) {
     state = 'ending';
-  }
-
-  // display the maze
-  for (let i = 0; i < mazeBlocks.length; i++) {
-    let mazeblock = mazeBlocks[i];
-    mazeblock.display();
-    mazeblock.collision();
-    mazeblock.parallax();
-
-    // check if the player(soul) collides with walls of the rectangles and trigger transparency changes
-    if (soulTouchesMaze) {
-      soul.x = 100;
-      soul.y = 50;
-      mazeblock.opacity();
-      bgm.collision.play();
-    }
-    
-    // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
-    let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
-    if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
-    mazeblock.startMove = true;
-    }
-    if (mazeblock.startMove === true) {
-      mazeblock.move();
-    }
   }
 
   //Frame Borders of the maze

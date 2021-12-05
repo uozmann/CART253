@@ -28,7 +28,7 @@ class ClueButton {
      // display the clue button in colour
     display() {
       push();
-      fill(0);
+      noFill();
       imageMode(CENTER);
 
       // Button shape

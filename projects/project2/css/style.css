@@ -15,18 +15,25 @@ Also hides overflow.
 }
 
 body {
-  background-image: url("assets/images/bgcave.jpg"); 
-  background: darkorchid;
+  background: black;
   padding: 0;
   margin: 0;
-  display: flex; 
-  justify-content: center;
-  align-items: center;
-  height: 104vh; /* Body is the height of the viewport */
   overflow: hidden; /* Hide anything that goes off the window size */
 
   font-family: irishGroverRegular;
-  font-size: 10em;
+  font-size: 5em;
+  
   color: white;
+ 
+   /* set the canvas to the middle of the window */
+   height: 100vh;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ 
+
+   cursor: none;
+
+ 
   
 }

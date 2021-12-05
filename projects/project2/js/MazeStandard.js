@@ -13,6 +13,8 @@ class MazeStandard {
       this.largeur = 40;
       this.alpha = 255;
       this.parallaxRatio = 1.1;
+      this.scaleRatio = 0;
+      this.a = 0;
       this.startMove = false;
       this.showFourthWall = showFourth;
     }
@@ -58,6 +60,27 @@ class MazeStandard {
     display() {
       fill(purple.r, purple.g, purple.b, this.alpha);
       noStroke();
+
+      push();
+      this.a = this.a + 0.01;
+      this.scaleRatio = cos(this.a) + 10;
+      // this.alpha = cos(this.a)*100;
+      scale(this.scaleRatio);
+
+      // first L shape
+      rect(this.x, this.y, this.longueur, this.largeur);
+      rect(this.x, this.y, this.largeur, this.courteLongueur);
+      // second L shape
+      rect(this.x + this.longueur/2, this.y + this.courteLongueur/2, this.largeur, this.courteLongueur);
+      rect(this.x + -this.longueur/2, this.y + this.courteLongueur/2 + this.courteLongueur + -this.largeur, this.longueur, this.largeur);
+      // third L shape
+      rect(this.x + this.longueur + -this.largeur, this.y + this.courteLongueur/2, this.largeur, this.longueur);
+      rect(this.x + this.longueur + -this.largeur, this.y + this.courteLongueur/2 + this.longueur, this.courteLongueur, this.largeur);
+      // forth ramdon wall
+      if (this.showFourthWall === true) {
+        rect(this.x + this.longueur + -this.largeur + this.courteLongueur, this.y + this.courteLongueur/2 + this.longueur, this.largeur, this.fourthLongueur);
+      }
+      pop();
 
       push();
       // first L shape
