@@ -6,14 +6,17 @@
 // When in the maze, use "awsd" to move; the smaller yellow circle will open the maze so it is easier to move across; the bigger grey circle are clues to pursue the storyline.
 
 // Sources
-// Codes come from CART253's course content and my own exploration
+// Codes come from CART253's course content, p5 Library, consultation with Computational Lab and my own exploration
 // All visuals come from myself
 // Sounds come from the open-source platform Aigei.com
 
 // States functions
 // title(); cave(); maze(); clue1(); clue2(); clue3(); clue4(); clue5(); ending(); narrative();
 
-// Question: simplifying clues? States and arrays? (js:333)
+// Question: 
+// 1. how to assign an order to the clues? (The clue is triggered only if current clue = clue [i]; if not goes to the state wrongClue)
+// 2. player and wall collision? (how to stop the player from going into the walls? or how to place the wall's position acoording to player's new position?)
+//
 
 
 
@@ -26,27 +29,41 @@ let caveatRegular;
 let poiretRegular;
 
 // Images
+//Background Images
 let bg = {
   cave: undefined,
   maze1: undefined,
   palace: undefined,
+  mountain: undefined,
+  monastere: undefined,
+  caveSky: undefined,
+  erhai: undefined,
   x: undefined,
   y: undefined,
-
-
+  transparency: 0,
 };
+//Character Images
 let character = {
-  soul: undefined,
-  soulX: undefined,
-  soulY: undefined,
-
+  //left-side character
+  character1X: undefined,
+  character1Y: undefined,
+  //rigth-side character
+  character2X: undefined,
+  character2Y: undefined,
+  //transparency control
+  transparency: 0,
+  //character images
   man: undefined,
-  manX: undefined,
-  manY: undefined,
-
   princess: undefined,
-  princessX: undefined,
-  princessY: undefined,
+  princessCave: undefined,
+  eagle: undefined,
+  eaglePrincess: undefined,
+  eaglePalace: undefined,
+  priest: undefined,
+  king: undefined,
+  soul: undefined,
+  soulSparkles: undefined,
+  empty: undefined,
  
 }
 let dialogBox = {
@@ -69,12 +86,13 @@ let lineClue1 = [`This is the story of a poor young man...(click to continue)`, 
 let lineClue2 = [`However their love for each other is not tolerated...(click to continue)`, `So in order to stay together they decided to leave the palace (click to continue)`, `The man transformed into a bird and carried the princess to a cave (click to continue)`, `A cave on top of the snow mountain. (click to continue)`, `Where they decided to leve the rest of their life (click to continue)`,];
 let lineClue3 = [`This is the story of a poor king...(click to continue)`, `To whom his precious daughter has been taken away (click to continue)`, `He asked a priest to help him bring back his dear one... (click to continue)`, `The priest with his powerful magic searched in the palace (click to continue)`, `And guessed the young man will come back (click to continue)`,];
 let lineClue4 = [`The snow mountain was so cold that...(click to continue)`, `The princess could not bear the cold of winter (click to continue)`, `She kindly asked the man to get her precious coat. (click to continue)`, `That can protect her from the hardest cold (click to continue)`, `So the man became a bird and flew to the palace. (click to continue)`,];
-let lineClue5 = [`In the palace awaits the priest.(click to continue)`, `He catched the young man and petrified him without mercy (click to continue)`, `Then he left as he is now the most powerful magician. (click to continue)`, `The king could never see his daughter again (click to continue)`, `And the princess could not survive winter in her cave. (click to continue)`,];
-let lineEnding = [`The soul exit the maze.(click to continue)`, `And sees the king (click to continue)`, `Alone standing beside the lake (click to continue)`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
+let lineClue5 = [`In his way awaits the priest.(click to continue)`, `He catched the young man and petrified him without mercy (click to continue)`, `Then he left as he is now the most powerful magician. (click to continue)`, `The king could never see his daughter again (click to continue)`, `And the princess could not survive winter in her cave. (click to continue)`,];
+let lineEnding1 = [`Now it's the same cave again...(click to continue)`, `I think I know who is this skeleton. (click to continue)`, `Alone standing beside the lake (click to continue)`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
+let lineEnding2 = [`The soul exit the maze.(click to continue)`, `And sees the king (click to continue)`, `Alone standing beside the lake (click to continue)`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
 let currentLine = 0;
 
 // Initial state
-let state = `title`;
+let state = `maze`;
 
 // Colours
 let purple = {
@@ -109,6 +127,9 @@ let soul = {
   size: 50,
   vx: 5,
   vy: 5,
+  //special setting for the intro narrative
+  xCave: 100,
+  vxCave: 5,
 };
 let numSoulTrace = 60; //trail num
 let pastSoulX = []; //trail coordinates
@@ -131,6 +152,11 @@ let clueStates = [`clue1`, `clue2`, `clue3`, `clue4`, `clue5`];
 let clueImages = [];
 let numClueImages = 5;
 let clues = [];
+let currentClue = 0;
+
+// Hint ellipse on the soul (player)
+let hint;
+
 
 // Loading images and text font
 function preload() {
@@ -141,9 +167,21 @@ function preload() {
   bg.cave = loadImage(`assets/images/bgcave.jpg`);
   bg.maze1 = loadImage(`assets/images/bgmaze1.png`);
   bg.palace = loadImage(`assets/images/bgpalace.jpg`);
+  bg.mountain = loadImage(`assets/images/bgmountain.jpg`);
+  bg.monastere = loadImage(`assets/images/bgmonastere.jpg`);
+  bg.caveSky = loadImage(`assets/images/bgcaveandsky.jpg`);
+  bg.erhai = loadImage(`assets/images/bgerhai.jpg`);
   character.man = loadImage(`assets/images/character-man.png`); 
-  character.princess = loadImage(`assets/images/character-princess.png`); 
+  character.princess = loadImage(`assets/images/character-princess.png`);
+  character.princessCave = loadImage(`assets/images/character-princesscave.png`);  
+  character.eagle = loadImage(`assets/images/character-eagle.png`); 
+  character.eaglePrincess = loadImage(`assets/images/character-eagleandprincess.png`); 
+  character.eaglePalace = loadImage(`assets/images/character-eagletopalace.png`); 
+  character.priest = loadImage(`assets/images/character-priest.png`); 
+  character.king = loadImage(`assets/images/character-king.png`); 
   character.soul = loadImage(`assets/images/character-soul.png`); 
+  character.soulSparkles = loadImage(`assets/images/character-soulsparkles.png`); 
+  character.empty = loadImage(`assets/images/character-empty.png`); 
   for (let i = 0; i < numClueImages; i++) { //images for Clue Buttons
     let loadedImage = loadImage(`assets/images/clue-${i}.png`);
     clueImages.push(loadedImage);
@@ -153,6 +191,7 @@ function preload() {
   bgm.maze = loadSound(`assets/sounds/bgm_maze.mp3`);
   bgm.collision = loadSound(`assets/sounds/bgm_collision.mp3`);
 }
+
 
 function setup() {
   createCanvas(windowWidth,windowHeight);
@@ -192,20 +231,19 @@ function setup() {
   }
 
   // Clues
-  clues[0] = new Clue(1, lineClue1);
-  clues[1] = new Clue(2, lineClue2);
-  clues[2] = new Clue(3, lineClue3);
-  clues[3] = new Clue(4, lineClue4);
-  clues[4] = new Clue(5, lineClue5);
+  clues[0] = new Clue(1, lineClue1, bg.palace, character.princess, character.man);
+  clues[1] = new Clue(2, lineClue2, bg.mountain, character.eagle, character.empty);
+  clues[2] = new Clue(3, lineClue3, bg.monastere, character.king, character.priest);
+  clues[3] = new Clue(4, lineClue4, bg.caveSky, character.eaglePalace, character.princessCave);
+  clues[4] = new Clue(5, lineClue5, bg.erhai, character.empty, character.priest);
 
   //Player trail
   for (let i = 0; i < numSoulTrace; i++) {
     pastSoulX.push(i);
     pastSoulY.push(i);
   }
-
-
 }
+
 
 function draw() {
   switch (state) {
@@ -246,6 +284,10 @@ function draw() {
     clues[4].display();
     break;
 
+  case `wrongClue`:
+    wrongClue();
+    break;
+
   case `ending`:
     ending();
     break;
@@ -255,6 +297,7 @@ function draw() {
     break;
   }
 }
+
 
 // Home Page
 function title() {
@@ -284,35 +327,65 @@ function title() {
   pop();
 }
 
+
 // A soul wakes up in a cave and see a dead corpse. He/she is wondering who he/she is; and to who the corpse belongs to. 
 function cave(){
-  background(purple.r, purple.g, purple.b);
+  background(0);
   fill(white.r, white.g, white.b);
 
   // Background images and characters
   push();
   imageMode(CENTER);
+  if (bg.transparency < 255){
+    fadeIn();
+  }
   bg.x = map(mouseX, 0, width, 700, width-700);
   bg.y = map(mouseY, 0, height, 200, height-200);
-  image(bg.cave, bg.x, bg.y, );
-  // character.soulX = map(mouseX, 0, width, 1400, 1600);
-  // character.soulY = map(mouseY, 0, height, 400, 600);
-  // image(character.soul, character.soulX, character.soulY);
+  image(bg.cave, bg.x, bg.y,);
+
+  //Sparkles
+  character.character1X = map(mouseX, 0, width, 400, 600);
+  character.character1Y = map(mouseY, 0, height, 400, 800);
+  image(character.soulSparkles, character.character1X, character.character1Y);
+  pop();
+
+  //Soul
+  push();
+  if (bg.transparency >= 255){
+    noStroke();
+    fill(yellow.r, yellow.g, yellow.b, 100);
+    //Noise x movement
+    soul.vxCave += 0.01;
+    soul.xCave = noise(soul.vxCave) * width;
+    //Set the position for the current ellipse
+    let current = frameCount % numSoulTrace;
+    pastSoulX[current] = soul.xCave;
+    pastSoulY[current] = mouseY;
+    //Set the trail of ellipses and their size variation
+    for (let i = 0; i < numSoulTrace; i++) {
+      // which+1 is the smallest (the oldest in the array)
+      let index = (current + 1 + i) % numSoulTrace; //witty equation taken from p5 library at https://p5js.org/examples/input-storing-input.html
+      ellipse(pastSoulX[index], pastSoulY[index], i, i);
+    }
+  }
   pop();
 
   // Dialog text
   push();
-  image(dialogBox, 0, 0, width, height);
-  let dialogCave = lineCave[currentLine];
-  textFont(poiretRegular);
-  textSize(32);
-  text(dialogCave, width/2, height*7/8 );
+  if (bg.transparency >= 255) {
+    image(dialogBox, 0, 0, width, height);
+    let dialogCave = lineCave[currentLine];
+    textFont(poiretRegular);
+    textSize(32);
+    text(dialogCave, width/2, height*7/8 );
+  }
   pop();
 
   if (currentLine === lineCave.length) {
     state = 'maze'; //when the dialog finishes go to the next state
   }
 }
+
 
 // The soul then tries to leave the cave and falls under a maze. The walls of the maze are all moving depending on the time. The soul will need to find clues hinting at their identities.
 function maze(){
@@ -325,32 +398,8 @@ function maze(){
   noStroke();
   currentLine = 0;
 
-  // Player (soul) settings
-  push();
-  fill(yellow.r, yellow.g, yellow.b);
-  let current = frameCount % numSoulTrace;
-  pastSoulX[current] = soul.x;
-  pastSoulY[current] = soul.y;
-
-  for (let i = 0; i < numSoulTrace; i++) {
-    // which+1 is the smallest (the oldest in the array)
-    let index = (current + 1 + i) % numSoulTrace;
-    ellipse(pastSoulX[index], pastSoulY[index], i, i);
-  }
-  // Keyboard Command (awsd)
-  if (keyIsDown(65)) {
-    soul.x += -soul.vx;
-  }
-  if (keyIsDown(68)) {
-    soul.x += soul.vx;
-  }
-  if (keyIsDown(83)) {
-    soul.y += soul.vy;
-  }
-  if (keyIsDown(87)) {
-    soul.y += -soul.vy;
-  }
-  pop();
+  // Call the soul function to make to move
+  soulControl();
 
   // Display trigger button for maze rotation
   push();
@@ -413,37 +462,63 @@ function maze(){
   if (clues[0].clueViewed && clues[1].clueViewed && clues[2].clueViewed && clues[3].clueViewed && clues[4].clueViewed) {
     state = 'ending';
   }
-
-  //Frame Borders of the maze
-  image(bg.maze1,0,0, width, height);
-
 }
 
 
 // The soul exit the maze and sees itself again in its dear country. She remembers who she is (the princess), and flies to the sky. Her sad tears became the rain pouring  on Er Hai
 function ending(){
-  background(purple.r, purple.g, purple.b);
+  background(0);
   fill(white.r, white.g, white.b);
 
+  // Background images and characters
   push();
-  textFont(irishGroverRegular);
-  textSize(40);
-  text(`[Ending narratives]`, width / 2, height / 3);
+  imageMode(CENTER);
+  if (bg.transparency < 255){
+    fadeIn();
+  }
+  bg.x = map(mouseX, 0, width, 700, width-700);
+  bg.y = map(mouseY, 0, height, 200, height-200);
+  image(bg.cave, bg.x, bg.y,);
+
+  //Sparkles
+  character.character1X = map(mouseX, 0, width, 400, 600);
+  character.character1Y = map(mouseY, 0, height, 400, 800);
+  image(character.soulSparkles, character.character1X, character.character1Y);
+  pop();
+
+  //Soul
+  push();
+  if (bg.transparency >= 255){
+    noStroke();
+    fill(yellow.r, yellow.g, yellow.b, 100);
+    //Noise x movement
+    soul.vxCave += 0.01;
+    soul.xCave = noise(soul.vxCave) * width;
+    //Set the position for the current ellipse
+    let current = frameCount % numSoulTrace;
+    pastSoulX[current] = soul.xCave;
+    pastSoulY[current] = mouseY;
+    //Set the trail of ellipses and their size variation
+    for (let i = 0; i < numSoulTrace; i++) {
+      // which+1 is the smallest (the oldest in the array)
+      let index = (current + 1 + i) % numSoulTrace; //witty equation taken from p5 library at https://p5js.org/examples/input-storing-input.html
+      ellipse(pastSoulX[index], pastSoulY[index], i, i);
+    }
+  }
   pop();
 
   // Dialog text
   push();
   image(dialogBox, 0, 0, width, height);
-  let dialogEnding = lineEnding[currentLine];
+  let dialogEnding1 = lineEnding[currentLine];
   textFont(poiretRegular);
   textSize(32);
-  text(dialogEnding, width/2, height*7/8 );
+  text(dialogEnding1, width/2, height*7/8 );
   pop();
 
   if (currentLine === lineClue5.length) {
     state = 'narrative';
-  }
-  
+  } 
 }
 
 // The real legend is written.
@@ -466,8 +541,65 @@ function narrative(){
   pop();
 }
 
-function keyPressed() {
- 
+// The state that is displayed when the clue should not be triggered yet.
+function wrongClue(){
+  background(purple.r, purple.g, purple.b);
+  fill(255);
+
+  // Header
+  push();
+  textFont(irishGroverRegular);
+  textSize(40);
+  text(`[Wrong Clue]`, width / 2, height / 3);
+  pop();
+
+  // Paragraph
+  push();
+  textFont(poiretRegular);
+  textSize(32);
+  text(`Oops, looks like it's the wrong place`, width/2, height/2 );
+  pop();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function soulControl() {
+  // Player (soul) settings
+  push();
+  fill(yellow.r, yellow.g, yellow.b, 100);
+  let current = frameCount % numSoulTrace; //witty equation taken from p5 library at https://p5js.org/examples/input-storing-input.html
+  pastSoulX[current] = soul.x;
+  pastSoulY[current] = soul.y;
+  for (let i = 0; i < numSoulTrace; i++) {
+    // current+1 is the smallest (the oldest in the array)
+    let index = (current + 1 + i) % numSoulTrace; //witty equation taken from p5 library at https://p5js.org/examples/input-storing-input.html
+    ellipse(pastSoulX[index], pastSoulY[index], i, i);
+  }
+  // Keyboard Command (awsd)
+  //A
+  if (keyIsDown(65) && soul.x > soul.size/2) {
+    soul.x += -soul.vx;
+  }
+  //D
+  if (keyIsDown(68) && soul.x < width - soul.size/2) {
+    soul.x += soul.vx;
+  }
+  //S
+  if (keyIsDown(83) && soul.y < height - soul.size/2) {
+    soul.y += soul.vy;
+  }
+  //W
+  if (keyIsDown(87) && soul.y > soul.size/2) {
+    soul.y += -soul.vy;
+  }
+  pop();
+
+  // Hint ellipse on player
+  hint = new Hint();
+  hint.direction(clueButtons[0].x, clueButtons[0].y);
+  hint.display();
 }
 
 function mousePressed() {
@@ -481,5 +613,18 @@ function mousePressed() {
   if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5') {
     currentLine = currentLine + 1;
   }
+}
 
+function fadeIn() {
+  //background transparency fadeIn
+  bg.transparency += 5;
+  tint(255, bg.transparency);
+  if (bg.transparency >= 256) {
+    bg.transparency = 0;
+  }
+}
+
+function fadeOut() {
+  bg.transparency += -5;
+  tint(255, bg.transparency);
 }

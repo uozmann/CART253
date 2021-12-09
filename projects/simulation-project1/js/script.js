@@ -182,7 +182,7 @@ function title() {
   text(`Hover HERE to play`, width/2, height*3 / 4);
   let dStartGame = dist(mouseX, mouseY, width/2, height*3 / 4);
   if(dStartGame < 10) {
-    titleSFX.play();
+    bubbleSFX.play();
     state = 'game';
   }
   pop();
@@ -349,7 +349,7 @@ function game() {
 
   // Conditions for end of the game
   if(player.y >= gameDangerZone.y) {
-    titleSFX.play();
+    // titleSFX.play();
     fill(0);
     // state = 'ending';
     // Text
