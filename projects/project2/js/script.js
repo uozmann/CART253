@@ -11,11 +11,7 @@
 // Sounds come from the open-source platform Aigei.com
 
 // States functions
-// title(); cave(); maze(); clue1(); clue2(); clue3(); clue4(); clue5(); ending(); narrative();
-
-// Bugs to fix
-// 1. Whe pressing "W" and if the player is at the top of the window, 
-
+// title(); cave(); maze(); clue1(); clue2(); clue3(); clue4(); clue5(); wrongClue(); ending(); ending2(); narrative();
 
 
 "use strict";
@@ -29,8 +25,8 @@ let poiretRegular;
 // Images
 //Background Images
 let bg = {
+  cover: undefined,
   cave: undefined,
-  maze1: undefined,
   palace: undefined,
   mountain: undefined,
   monastere: undefined,
@@ -66,7 +62,6 @@ let character = {
   empty: undefined,
  
 }
-
 // Image for the instruction state
 let instruction = {
   x: undefined,
@@ -83,6 +78,7 @@ let bgm = {
   hasStarted: false,
 }
 
+//Texts
 //Narrative dialog box
 let dialogBox = {
   x: undefined,
@@ -91,15 +87,17 @@ let dialogBox = {
 }
 
 // Story text arrays
-let lineCave = [`Where am I...(click to continue)`, `A dead corpse (click to continue)`, `What is this place? Seems like a cave...`, `I can't remember anything...Why am I here? What am I? And who is this skeleton?`, `I must go out, let's see what's outside the cave...`,];
-let lineClue1 = [`This is the story of a poor young man...`, `To whom magic powers have been gifted `, `He can transform himself into anything... `, `So he became a bird, and entered the princess' garden.`, `And they fell in love`,];
-let lineClue2 = [`However their love for each other is not tolerated...`, `So in order to stay together they decided to leave the palace.`, `The man transformed into a bird and carried the princess to a cave.`, `A cave on top of the snow mountain.`, `Where they decided to leve the rest of their life.`,];
-let lineClue3 = [`This is the story of a poor king...(click to continue)`, `To whom his precious daughter has been taken away (click to continue)`, `He asked a priest to help him bring back his dear one... (click to continue)`, `The priest with his powerful magic searched in the palace (click to continue)`, `And guessed the young man will come back (click to continue)`,];
-let lineClue4 = [`The snow mountain was so cold that...(click to continue)`, `The princess could not bear the cold of winter (click to continue)`, `She kindly asked the man to get her precious coat. (click to continue)`, `That can protect her from the hardest cold (click to continue)`, `So the man became a bird and flew to the palace. (click to continue)`,];
-let lineClue5 = [`In his way awaits the priest.(click to continue)`, `He catched the young man and petrified him without mercy (click to continue)`, `Then he left as he is now the most powerful magician. (click to continue)`, `The king could never see his daughter again (click to continue)`, `And the princess could not survive winter in her cave. (click to continue)`,];
-let lineWrongClue = [`I hear voices...Where am I?(click to continue)`, `Ah my head hurts! I should get out of here (click to continue)`,];
-let lineEnding1 = [`Now it's the same cave again...(click to continue)`, `All those scenes I have seen...`, `Are they real? Are they memories?`, `If so...`, `I think I know who this skeleton is.`, `it's...`];
-let lineEnding2 = [`And suddenly I remember everything`, `My death, my sorrow, my anger... Everything hidden inside lies.`, `I remember blablabla...`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
+let lineCave = [`Where am I...(click to continue)`, `I can’t seem to remember anything, am I in a cave?`, `Is this a skeleton in front of me? Who is it?...And who am I? What am I?`, `I seem to be a ball of light...my mind starts to hurt...`, `Wait...I start to see a maze, it’s in my mind, this is so strange... Really really strange...`,];
+let lineClue1 = [`This is the beginning of a romance story.`, `Once upon a time, a poor young man living in the mountains received a magical gift, that can make him transform into any bird.`, `So he became an eagle, and flew to the royal palace. Never has he seen such a splendid garden, and inside the garden 
+was a princess, so beautiful that he cannot take his eyes elsewhere.`, `He knows however, that the king would never allow a poor man like him, to marry his precious daughter.`, `But the princess was so beautiful, so beautiful that he cannot forget.`, `So, secretly he meets with the princess, in her garden, and love has been created.`,];
+let lineClue2 = [`Shortly, the young man could not bear anymore to enter the garden like a thief, he wants more.`, `One day, he decided to set an end to their secret meetings.`, `So he transformed into a bird, and carried the princess to the mountain he used to live.`, `The mountain was cold, and covered by snow. There was no one.`, `On the top of the mountain was a cave, that one can only reach by flying. He settled the princess in this cave.`, `The young man was happy, because no one could ever find this place, and no one could disturb their love anymore.`,];
+let lineClue3 = [`In the palace, all know that the king is not well.`, `He could not sleep, so much he worries for his poor daughter who disappeared suddenly, leaving no trace.`, `His counselors referred the king to the priest, who is known to be a powerful magician. The king then went to 
+the temple and asked for his help.`, `Upon a detailed inquiry, the priest concluded that a magical being, like him, has taken the princess away.`, `Learning this, he promised the king to capture the culprit.`,];
+let lineClue4 = [`The snow mountain was so cold…and the princess has nothing but the dress she wore in her garden.`, `Her feet are frozen, her hands are stiff, the weather was unbearable.`, `So she begged the man to bring her precious coat, that can protect her from the hardest cold.`, `The man does not want her to die, so he transformed into a bird, and flew to the palace.`,];
+let lineClue5 = [`In his way awaits the priest, who settled a trap to capture the young man.`, `Miracle did not happen, and the young man has been caught.`, `The priest then petrified him without mercy and threw the statue of the young man into the lake Erhai.`, `Having accomplished his promise, the priest disappeared. No one can find him anymore.`, `The king searched for his daughter, for days, for months, for year…But nothing has been found.`,];
+let lineWrongClue = [`I hear voices...Where am I?`, `Ah my head hurts! I should get out of here.`,];
+let lineEnding1 = [`Suddenly, the maze in my mind disappeared again.`, `In front of me was the skeleton of an unknown person. It’s still the same cave…`, `All those scenes I have seen… Are they real?`, `Are they…perhaps…people’s memories?`, `If so…`, `I think I know who this skeleton is.`, `it's...`];
+let lineEnding2 = [`And suddenly the cave disappeared, I see Erhai below me, I see my country. And I remembered everything.`, `My death, my sorrow, my anger…all masked inside lies. I remember…`, `How I have been carried to this cave against my will, isolated until death for the “love” that the man claimed for me.`, `And the priest…gifted with such powerful magic that he chooses to kill, but neglects a life that he could save.`, `Is it human nature? Is it a sad coincidence?`, `I feel tired and lighter, as dust carried by the wind, maybe it is my final end?`, `Then, with my last effort, I searched for the palace, because I remembered…`, `That I never had the chance to tell my farewell to my dear father.`, `…`];
 let currentLine = 0;
 
 // Ending Text Input Box
@@ -112,11 +110,10 @@ let endingChoice = {
   longueur: 450,
   largeur: 80,
   entry: false, //set the entry to false at first
-
 }
 
 // Initial state
-let state = `ending`;
+let state = `title`;
 
 // Colours
 let purple = {
@@ -164,6 +161,7 @@ let pastSoulY = []; //trail coordinates
 
 // Parameter to check collision
 let soulTouchesMaze = false;
+
 // Trigger for maze rotation
 let rotationButton = {
   x: undefined,
@@ -182,7 +180,7 @@ let numClueImages = 5;
 let clues = [];
 let currentClue = 0;
 
-// Hint ellipse on the soul (player)
+// Purple hint ellipse on the soul (player)
 let hint;
 
 
@@ -192,8 +190,8 @@ function preload() {
   cairoRegular = loadFont(`assets/fonts/Cairo/Cairo-Regular.ttf`);
   caveatRegular = loadFont(`assets/fonts/Caveat/Caveat-Regular.ttf`); 
   poiretRegular = loadFont(`assets/fonts/Poiret/PoiretOne-Regular.ttf`); 
+  bg.cover = loadImage(`assets/images/bgcover.jpg`);
   bg.cave = loadImage(`assets/images/bgcave.jpg`);
-  // bg.maze1 = loadImage(`assets/images/bgmaze1.png`);
   bg.palace = loadImage(`assets/images/bgpalace.jpg`);
   bg.mountain = loadImage(`assets/images/bgmountain.jpg`);
   bg.monastere = loadImage(`assets/images/bgmonastere.jpg`);
@@ -353,6 +351,11 @@ function title() {
   fill(255);
   textAlign(CENTER, CENTER);
 
+  // Cover Image
+  push();
+  image(bg.cover, 0, 0, width, height);
+  pop();
+
   // Header
   push();
   textFont(irishGroverRegular);
@@ -362,7 +365,7 @@ function title() {
 
   // Paragraph
   push();
-  textFont(poiretRegular);
+  textFont(irishGroverRegular);
   textSize(32);
   text(`A tale of the Cloud of Eternal Sorrow re-imagined`, width/2, height/2 );
   pop();
@@ -387,12 +390,12 @@ function cave(){
   if (bg.transparency < 255){
     fadeIn();
   }
-  bg.x = map(mouseX, 0, width, 700, width-700);
+  bg.x = map(mouseX, 0, width, 700, width-700); // Mousing effect on the images
   bg.y = map(mouseY, 0, height, 200, height-200);
   image(bg.cave, bg.x, bg.y,);
 
   //Sparkles
-  character.character1X = map(mouseX, 0, width, 400, 600);
+  character.character1X = map(mouseX, 0, width, 400, 600); // Mousing effect on the characters
   character.character1Y = map(mouseY, 0, height, 400, 800);
   image(character.soulSparkles, character.character1X, character.character1Y);
   pop();
@@ -421,12 +424,12 @@ function cave(){
   // Dialog text
   push();
   if (bg.transparency >= 255) {
-    image(dialogBox, 0, 0, width, height);
+    image(dialogBox, 0, 0, width, height); //dialog box
     let dialogCave = lineCave[currentLine];
     textFont(poiretRegular);
     textSize(32);
     rectMode(CENTER);
-    text(dialogCave, width/2, height*7/8);
+    text(dialogCave, width/2, height*7/8); //dialof text
   }
   pop();
 
@@ -464,13 +467,12 @@ function mazeInstruction() {
   imageMode(CENTER);
   image(instruction, width/2, height*2/3, width*5/9, height/2);
   pop();
-
-  
 }
 
 
 // The soul then tries to leave the cave and falls under a maze. The soul will need to find clues hinting at their identities.
 function maze(){
+  // Change music when at the maze
   if (bgm.hasStarted === false) {
     bgm.hasStarted = true;
     bgm.maze.loop();
@@ -480,22 +482,22 @@ function maze(){
   }
   background(0);
   noStroke();
-  currentLine = 0;
+  currentLine = 0; // Restart the current line for the next clue narratives
 
-  // Call the soul function to make to move
+  // Call the soul function to make it move
   soulControl();
 
   // display the maze
   for (let i = 0; i < mazeBlocks.length; i++) {
     let mazeblock = mazeBlocks[i];
     mazeblock.display();
-    mazeblock.collision();
-    mazeblock.parallax();
+    mazeblock.collision(); //check collision
+    mazeblock.parallax(); //parallax movement according to soul's position
 
     // check if the player(soul) collides with walls of the rectangles and trigger transparency changes
     if (soulTouchesMaze) {
-      soul.collisionTiming = 1000;
-      soul.blockedDirection = soul.direction;
+      soul.collisionTiming = 1000; //timer needed, otherwise there will be some time differences and make it bug
+      soul.blockedDirection = soul.direction; //prevent movement when collides with the maze walls
       if (soul.blockedDirection === `up`) {
         soul.y += (soul.vy *5);
       }
@@ -508,17 +510,17 @@ function maze(){
       if (soul.blockedDirection === `right`) {
         soul.x += (-soul.vx *5);
       }
-      console.log(mazeblock.alpha);
+      // Decrease maze wall's opacity when touched
       mazeblock.opacity();
       bgm.collision.play();
     }
     else if (!soulTouchesMaze) {
-      soul.collisionTiming += -1;
+      soul.collisionTiming += -1; //start timer
     }
 
-  if (soul.collisionTiming <= 0) {
+  if (soul.collisionTiming <= 0) { //reset timer
     soul.collisionTiming = 0;
-    soul.blockedDirection = ``;
+    soul.blockedDirection = ``; //reset value for blocked direction
   }
 
     
@@ -527,8 +529,8 @@ function maze(){
     if (dTriggerRotation <= rotationButton.size/2 + soul.size/2) {
     mazeblock.startMove = true;
     }
-    if (mazeblock.startMove === true) {
-      mazeblock.move();
+    if (mazeblock.startMove === true) { 
+      mazeblock.move(); // open-up the walls
     }
   }
 
@@ -551,7 +553,7 @@ function maze(){
     if (dTriggerClue <= clueButton.size/2 + soul.size/2 && currentClue === i) {
       state = clueButton.state;
       if (currentClue <4) {
-        currentClue ++;
+        currentClue ++; //add a value for to close the clues seen, and to open up next clue.
       }
       // Placing the player(soul) in the previews position 
       if(soul.x <= clueButton.x) {
@@ -567,6 +569,7 @@ function maze(){
         soul.y += soul.vy*2;
       }
     }
+    // If the player touches a clue that is not opened, then goes to the wrongClue state
     else if (dTriggerClue <= clueButton.size/2 + soul.size/2 && currentClue !== i) {
       state = 'wrongClue';
       // Placing the player(soul) in the previews position 
@@ -643,7 +646,8 @@ function ending(){
   text(dialogEnding1, width/2, height*7/8 );
   pop();
 
-  if (currentLine === lineEnding1.length) {
+  // When all texts are displayed, call the input pannel
+  if (currentLine >= lineEnding1.length) {
     choiceInput();
   } 
 }
@@ -675,6 +679,7 @@ function ending2(){
   text(dialogEnding2, width/2, height*7/8 );
   pop();
 
+  //Go to the next state
   if (currentLine === lineEnding2.length) {
     state = 'narrative'
   } 
@@ -684,21 +689,42 @@ function ending2(){
 function narrative(){
   background(purple.r, purple.g, purple.b);
   fill(255);
-  textAlign(CENTER);
+
   currentClue = 0;
 
   // Header
   push();
   textFont(irishGroverRegular);
   textSize(40);
-  text(`[Real Legend]`, width / 2, height / 3);
+  textAlign(CENTER);
+  text(`The Real Legend (End)`, width / 2, height / 8);
   pop();
 
   // Paragraph
   push();
   textFont(poiretRegular);
   textSize(32);
-  text(`Press CTRL + R to restart`, width/2, height/2 );
+  textAlign(CENTER);
+  text(`
+      The legend of Wang Fuyun is a widely known story in Dali. 
+  In winter, on a cloudless and sunny day, suddenly a cloud as bright as silver and white as snow appeared on the Yuju Peak of 
+  Cangshan Mountain. 
+
+      The cloud displays clean and soft light across the deep blue sky.
+  Then, unpredictably, it turns from white to black and raises higher and higher, and its figure became longer and longer, like a slender 
+  woman with disheveled hair and a black funeral dress, as if looking down on the vast sea of Er and crying loudly. This is the legendary 
+  Cloud of Eternal Sorrow. When the appears, no matter how good the weather is, there will be violent winds and sea waves in an 
+  instant. 
+
+      According to legend, this cloud is the incarnation of Princess Afeng of Nanzhao. She falls in love with a young hunter and together 
+  they fleed to the mountain, living in a cave. Her father then invited a Buddhist priest, master Luo Quan, to search for the princess. The 
+  mountain was too cold for the princess, so the man went into the palace looking for a coat. He found the magic coat of the priest that 
+  can protect from any cold, but on his way to bring it back to the princess, he was petrified by the priest, becoming a stone in the sea 
+  of Er. The princess died on the peak of Cangshan Yuju and her essence turned into a white cloud, angry, trying to blow the sea away 
+  and see her lover. Therefore, later generations called this cloud of eternal sorrow.
+
+      Of course, in reality, the appearance of this cloud is entirely caused by the high-speed airflow, and it is related to the special 
+  geographical location of Cangshan and Erhai.`, width/2, height/6 );
   pop();
 }
 
@@ -709,6 +735,7 @@ function wrongClue(){
   textAlign(CENTER);
 
   push();
+  // Change music
   if (bgm.hasStarted === true) {
     bgm.hasStarted = false;
     bgm.maze.stop();
@@ -716,6 +743,7 @@ function wrongClue(){
   }
   pop();
 
+  // Background Image
   push();
   imageMode(CENTER);
   if (bg.transparency < 255){
@@ -734,7 +762,7 @@ function wrongClue(){
     let dialogWrongClue = lineWrongClue[currentLine];
     textFont(poiretRegular);
     textSize(32);
-    text(dialogWrongClue, width/2, height*7/8 );
+    text(dialogWrongClue, width/2, height/2 );
   }
   pop();
 
@@ -796,6 +824,7 @@ function mousePressed() {
     bgm.story.loop();
   }
 
+  // start maze
   if (state === 'mazeInstruction') {
     state = 'maze';
   }
@@ -816,23 +845,32 @@ function fadeIn() {
 }
 
 function fadeOut() {
+  //background fadeOut (optional)
   bg.transparency += -5;
   tint(255, bg.transparency);
+  if (bg.transparency <= 0) {
+    bg.transparency = 0;
+  }
 }
 
 //Key input box for the ending
 function choiceInput() {
   endingChoice.entry = true;
+
   push();
+  // image
   imageMode(CENTER);
   image(endingChoice.choiceBox, width/2, height/3)
   rectMode(CENTER);
+
+  // white input box
   fill(255);
   endingChoice.x = width/2;
   endingChoice.y = height/3;
   rect(endingChoice.x, endingChoice.y - endingChoice.padding, endingChoice.longueur, endingChoice.largeur);
   pop();
 
+  // input text
   push();
   fill(purple.r, purple.g, purple.b);
   textAlign(CENTER, CENTER);

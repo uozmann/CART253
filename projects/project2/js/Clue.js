@@ -5,9 +5,9 @@ class Clue {
       this.id = id;
       this.lineClue = lineClue;
       this.padding = 50;
-      this.imageBg = clueImageBg;
-      this.imageCharacter1 = clueImageCharacter1;
-      this.imageCharacter2 = clueImageCharacter2;
+      this.imageBg = clueImageBg; //background
+      this.imageCharacter1 = clueImageCharacter1; //character 1
+      this.imageCharacter2 = clueImageCharacter2; //character 2
     }
   
      // display the clue button in colour
@@ -16,6 +16,7 @@ class Clue {
         fill(255);
         this.clueViewed = true;
 
+        // change music
         push();
         if (bgm.hasStarted === true) {
           bgm.hasStarted = false;
@@ -24,6 +25,7 @@ class Clue {
         }
         pop();
 
+        // display the background, characters and texts
         push();
         imageMode(CENTER);
         if (bg.transparency < 255){
@@ -43,7 +45,8 @@ class Clue {
         image(this.imageCharacter1, character.character2X, character.character2Y); //Character Display
         }
         pop();
-      
+
+        // I'm gonna keep this for reference
         // push();
         // textFont(irishGroverRegular);
         // textSize(40);
@@ -63,7 +66,7 @@ class Clue {
         }
         pop();
         
-      
+        // return to the maze when all lines are finished.
         if (currentLine === this.lineClue.length) {
           state = 'maze';
         }
