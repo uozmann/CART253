@@ -6,9 +6,13 @@
 // When in the maze, use "awsd" to move; the smaller yellow circle will open the maze so it is easier to move across; the bigger grey circle are clues to pursue the storyline.
 
 // Sources
-// Codes come from CART253's course content, p5 Library, consultation with Computational Lab and my own exploration
+// Codes come from CART253's course content and Pippin, p5 Library, consultation with Computational Lab and my own exploration
 // All visuals come from myself
 // Sounds come from the open-source platform Aigei.com
+// Detailed Attributions: 
+// 1. Pippin and CART 253: clue states(line 556), input box(line 896-914).
+// 2. Sabine: perfected maze rotations(in the MazeStandart Class, line 24), help combine repeating functions for the clues into a class (in the Clue class, line 3-6), collision with maze walls (line 503-514 (added the soul.blockeddirection and soul.direction)), added currentclue inside brakets (line 819).
+// 3. P5 Js: Size decreasing per frame for the trail of the soul (line 420 - 423), angle around a circle equation (in the Hint Class, line 10-12).
 
 // States functions
 // title(); cave(); maze(); clue1(); clue2(); clue3(); clue4(); clue5(); wrongClue(); ending(); ending2(); narrative();

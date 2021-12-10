@@ -8,7 +8,7 @@ class Hint {
     
     //Rotational Angle 
     direction(clueX, clueY) {
-      this.angle = atan2(clueY - this.y, clueX - this.x); // always orientated towards the opened clue
+      this.angle = atan2(clueY - this.y, clueX - this.x); // always orientated towards the opened clue, refered to https://p5js.org/examples/math-arctangent.html
     };
   
     display() {
