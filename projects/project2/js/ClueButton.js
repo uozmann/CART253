@@ -12,19 +12,19 @@ class ClueButton {
     parallax() {
       //Moving the maze according to player's position
         //A
-        if (keyIsDown(65) && soul.x > soul.size/2) { 
+        if (keyIsDown(65) && soul.x > soul.size/2 && soul.blockedDirection !== `left`) { 
           this.x += soul.vx*this.parallaxRatio;
         }
         //D
-        if (keyIsDown(68) && soul.x < width - soul.size/2) { 
+        if (keyIsDown(68) && soul.x < width - soul.size/2 && soul.blockedDirection !== `right`) { 
           this.x += -soul.vx*this.parallaxRatio;
         }
         //S
-        if (keyIsDown(83) && soul.y < height - soul.size/2) {
+        if (keyIsDown(83) && soul.y < height - soul.size/2 && soul.blockedDirection !== `down`) {
           this.y += -soul.vy*this.parallaxRatio;
         }
         //W
-        if (keyIsDown(87) && soul.y > 0 - soul.size/2) {
+        if (keyIsDown(87) && soul.y > soul.size/2 && soul.blockedDirection !== `up`) {
           this.y += soul.vy*this.parallaxRatio;
         }
     }

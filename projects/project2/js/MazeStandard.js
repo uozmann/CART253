@@ -12,6 +12,7 @@ class MazeStandard {
       this.fourthLongueur = 150; //for a fourthwall that appears on random blocks of the maze
       this.largeur = 40;
       this.alpha = 255;
+      this.changeAlpha = true;
       this.parallaxRatio = 1.1; //parallax movement
       this.a = 0;
       this.startMove = false; //for morph effect
@@ -29,19 +30,19 @@ class MazeStandard {
     parallax() {
       //Moving the maze according to player's position
         //A
-        if (keyIsDown(65) && soul.x > soul.size/2) { 
+        if (keyIsDown(65) && soul.x > soul.size/2 && soul.blockedDirection !== `left`) { 
           this.x += soul.vx*this.parallaxRatio;
         }
         //D
-        if (keyIsDown(68) && soul.x < width - soul.size/2) { 
+        if (keyIsDown(68) && soul.x < width - soul.size/2 && soul.blockedDirection !== `right`) { 
           this.x += -soul.vx*this.parallaxRatio;
         }
         //S
-        if (keyIsDown(83) && soul.y < height - soul.size/2) {
+        if (keyIsDown(83) && soul.y < height - soul.size/2 && soul.blockedDirection !== `down`) {
           this.y += -soul.vy*this.parallaxRatio;
         }
         //W
-        if (keyIsDown(87) && soul.y > 0 - soul.size/2) {
+        if (keyIsDown(87) && soul.y > soul.size/2 && soul.blockedDirection !== `up`) {
           this.y += soul.vy*this.parallaxRatio;
         }
     }
@@ -53,7 +54,10 @@ class MazeStandard {
 
     opacity() {
       // decrease opacity for when the soul touches the wall
-      this.alpha += -100;
+      if (this.changeAlpha === true) {
+        // this.alpha += -50;
+        // this.changeAlpha = false;
+      }
     }
 
 

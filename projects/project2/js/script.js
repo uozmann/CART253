@@ -13,10 +13,8 @@
 // States functions
 // title(); cave(); maze(); clue1(); clue2(); clue3(); clue4(); clue5(); ending(); narrative();
 
-// Question: 
-// 1. how to assign an order to the clues? (The clue is triggered only if current clue = clue [i]; if not goes to the state wrongClue)
-// 2. player and wall collision? (how to stop the player from going into the walls? or how to place the wall's position acoording to player's new position?)
-//
+// Bugs to fix
+// 1. Whe pressing "W" and if the player is at the top of the window, 
 
 
 
@@ -38,6 +36,7 @@ let bg = {
   monastere: undefined,
   caveSky: undefined,
   erhai: undefined,
+  wrongClue: undefined,
   x: undefined,
   y: undefined,
   transparency: 0,
@@ -87,6 +86,7 @@ let lineClue2 = [`However their love for each other is not tolerated...(click to
 let lineClue3 = [`This is the story of a poor king...(click to continue)`, `To whom his precious daughter has been taken away (click to continue)`, `He asked a priest to help him bring back his dear one... (click to continue)`, `The priest with his powerful magic searched in the palace (click to continue)`, `And guessed the young man will come back (click to continue)`,];
 let lineClue4 = [`The snow mountain was so cold that...(click to continue)`, `The princess could not bear the cold of winter (click to continue)`, `She kindly asked the man to get her precious coat. (click to continue)`, `That can protect her from the hardest cold (click to continue)`, `So the man became a bird and flew to the palace. (click to continue)`,];
 let lineClue5 = [`In his way awaits the priest.(click to continue)`, `He catched the young man and petrified him without mercy (click to continue)`, `Then he left as he is now the most powerful magician. (click to continue)`, `The king could never see his daughter again (click to continue)`, `And the princess could not survive winter in her cave. (click to continue)`,];
+let lineWrongClue = [`I hear voices...Where am I?(click to continue)`, `Ah my head hurts! I should get out of here (click to continue)`,];
 let lineEnding1 = [`Now it's the same cave again...(click to continue)`, `I think I know who is this skeleton. (click to continue)`, `Alone standing beside the lake (click to continue)`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
 let lineEnding2 = [`The soul exit the maze.(click to continue)`, `And sees the king (click to continue)`, `Alone standing beside the lake (click to continue)`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
 let currentLine = 0;
@@ -130,6 +130,8 @@ let soul = {
   //special setting for the intro narrative
   xCave: 100,
   vxCave: 5,
+  direction: ``,
+  blockedDirection: ``,
 };
 let numSoulTrace = 60; //trail num
 let pastSoulX = []; //trail coordinates
@@ -139,8 +141,8 @@ let pastSoulY = []; //trail coordinates
 let soulTouchesMaze = false;
 // Trigger for maze rotation
 let rotationButton = {
-  x: 925,
-  y: 550,
+  x: undefined,
+  y: undefined,
   size: 100,
 }
 
@@ -171,6 +173,7 @@ function preload() {
   bg.monastere = loadImage(`assets/images/bgmonastere.jpg`);
   bg.caveSky = loadImage(`assets/images/bgcaveandsky.jpg`);
   bg.erhai = loadImage(`assets/images/bgerhai.jpg`);
+  bg.wrongClue = loadImage(`assets/images/bgwrongclue.jpg`);
   character.man = loadImage(`assets/images/character-man.png`); 
   character.princess = loadImage(`assets/images/character-princess.png`);
   character.princessCave = loadImage(`assets/images/character-princesscave.png`);  
@@ -223,7 +226,8 @@ function setup() {
 
   // Setting up the buttons for clues
   randomSeed(3);
-  for (let i=0; i < numClueButtons; i++) {
+  clueButtons.push(new ClueButton(width*7/4, height*3/2, clueStates[0], clueImages[0]));
+  for (let i=1; i < numClueButtons; i++) {
     x = random(0, width + width/2);
     y = random(0, height + height/2);
     let clueButton = new ClueButton(x, y, clueStates[i], clueImages[i]);
@@ -242,6 +246,10 @@ function setup() {
     pastSoulX.push(i);
     pastSoulY.push(i);
   }
+
+  //Rotational Button
+  rotationButton.x = width*9/10;
+  rotationButton.y = height/10;
 }
 
 
@@ -416,11 +424,27 @@ function maze(){
 
     // check if the player(soul) collides with walls of the rectangles and trigger transparency changes
     if (soulTouchesMaze) {
-      soul.x = 100;
-      soul.y = 50;
+      soul.blockedDirection = soul.direction;
+      if (soul.blockedDirection === `up`) {
+        soul.y += (soul.vy *5);
+      }
+      if (soul.blockedDirection === `down`) {
+        soul.y += (-soul.vy *5);
+      }
+      if (soul.blockedDirection === `left`) {
+        soul.x += (soul.vx *5);
+      }
+      if (soul.blockedDirection === `right`) {
+        soul.x += (-soul.vx *5);
+      }
+      console.log(mazeblock.alpha);
       mazeblock.opacity();
       bgm.collision.play();
     }
+    // else if (!soulTouchesMaze) {
+    //   soul.blockedDirection = ``;
+    // }
+
     
     // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
     let dTriggerRotation = dist(rotationButton.x, rotationButton.y, soul.x, soul.y);
@@ -440,21 +464,39 @@ function maze(){
 
     // Check if the player (soul) touches the clue button and trigger clue narratives
     let dTriggerClue = dist(clueButton.x, clueButton.y, soul.x, soul.y);
-    if (dTriggerClue <= clueButton.size/2 + soul.size/2) {
-    state = clueButton.state;
-
+    if (dTriggerClue <= clueButton.size/2 + soul.size/2 && currentClue === i) {
+      state = clueButton.state;
+      if (currentClue <4) {
+        currentClue ++;
+      }
       // Placing the player(soul) in the previews position 
       if(soul.x <= clueButton.x) {
-        soul.x += -soul.vx;
+        soul.x += -soul.vx*2;
       }
       else if(soul.x >= clueButton.x) {
-        soul.x += soul.vx;
+        soul.x += soul.vx*2;
       }
       if(soul.y <= clueButton.y) {
-        soul.y += -soul.vy;
+        soul.y += -soul.vy*2;
       }
       else if(soul.y >= clueButton.y) {
-        soul.y += soul.vy;
+        soul.y += soul.vy*2;
+      }
+    }
+    else if (dTriggerClue <= clueButton.size/2 + soul.size/2 && currentClue !== i) {
+      state = 'wrongClue';
+      // Placing the player(soul) in the previews position 
+      if(soul.x <= clueButton.x) {
+        soul.x += -soul.vx*2;
+      }
+      else if(soul.x >= clueButton.x) {
+        soul.x += soul.vx*2;
+      }
+      if(soul.y <= clueButton.y) {
+        soul.y += -soul.vy*2;
+      }
+      else if(soul.y >= clueButton.y) {
+        soul.y += soul.vy*2;
       }
     }
   }
@@ -510,9 +552,10 @@ function ending(){
   // Dialog text
   push();
   image(dialogBox, 0, 0, width, height);
-  let dialogEnding1 = lineEnding[currentLine];
+  let dialogEnding1 = lineEnding1[currentLine];
   textFont(poiretRegular);
   textSize(32);
+  textAlign(CENTER);
   text(dialogEnding1, width/2, height*7/8 );
   pop();
 
@@ -525,6 +568,8 @@ function ending(){
 function narrative(){
   background(purple.r, purple.g, purple.b);
   fill(255);
+  textAlign(CENTER);
+  currentClue = 0;
 
   // Header
   push();
@@ -543,22 +588,35 @@ function narrative(){
 
 // The state that is displayed when the clue should not be triggered yet.
 function wrongClue(){
-  background(purple.r, purple.g, purple.b);
+  background(0);
   fill(255);
+  textAlign(CENTER);
 
-  // Header
   push();
-  textFont(irishGroverRegular);
-  textSize(40);
-  text(`[Wrong Clue]`, width / 2, height / 3);
+  imageMode(CENTER);
+  if (bg.transparency < 255){
+    fadeIn();
+  }
+  bg.x = map(mouseX, 0, width, 700, width-700);
+  bg.y = map(mouseY, 0, height, 200, height-200);
+  image(bg.wrongClue, bg.x, bg.y,);
   pop();
 
   // Paragraph
+  // Dialog text
   push();
-  textFont(poiretRegular);
-  textSize(32);
-  text(`Oops, looks like it's the wrong place`, width/2, height/2 );
+  if (bg.transparency >= 255) {
+    image(dialogBox, 0, 0, width, height);
+    let dialogWrongClue = lineWrongClue[currentLine];
+    textFont(poiretRegular);
+    textSize(32);
+    text(dialogWrongClue, width/2, height*7/8 );
+  }
   pop();
+
+  if (currentLine === lineWrongClue.length) {
+    state = 'maze'; //when the dialog finishes go to the next state
+  }
 }
 
 
@@ -581,24 +639,28 @@ function soulControl() {
   //A
   if (keyIsDown(65) && soul.x > soul.size/2) {
     soul.x += -soul.vx;
+    soul.direction = `left`;
   }
   //D
   if (keyIsDown(68) && soul.x < width - soul.size/2) {
     soul.x += soul.vx;
+    soul.direction = `right`;
   }
   //S
   if (keyIsDown(83) && soul.y < height - soul.size/2) {
     soul.y += soul.vy;
+    soul.direction = `down`;
   }
   //W
   if (keyIsDown(87) && soul.y > soul.size/2) {
     soul.y += -soul.vy;
+    soul.direction = `up`;
   }
   pop();
 
   // Hint ellipse on player
   hint = new Hint();
-  hint.direction(clueButtons[0].x, clueButtons[0].y);
+  hint.direction(clueButtons[currentClue].x, clueButtons[currentClue].y);
   hint.display();
 }
 
@@ -610,7 +672,7 @@ function mousePressed() {
   }
   
   // count the dialog length
-  if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5') {
+  if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5' || 'wrongClue') {
     currentLine = currentLine + 1;
   }
 }
