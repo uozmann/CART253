@@ -56,7 +56,6 @@ class MazeStandard {
       // decrease opacity for when the soul touches the wall
       if (this.changeAlpha === true) {
         this.alpha += -50;
-        this.changeAlpha = false;
       }
     }
 
