@@ -132,6 +132,7 @@ let soul = {
   vxCave: 5,
   direction: ``,
   blockedDirection: ``,
+  collisionTiming: undefined,
 };
 let numSoulTrace = 60; //trail num
 let pastSoulX = []; //trail coordinates
@@ -424,6 +425,7 @@ function maze(){
 
     // check if the player(soul) collides with walls of the rectangles and trigger transparency changes
     if (soulTouchesMaze) {
+      soul.collisionTiming = 1000;
       soul.blockedDirection = soul.direction;
       if (soul.blockedDirection === `up`) {
         soul.y += (soul.vy *5);
@@ -441,9 +443,14 @@ function maze(){
       mazeblock.opacity();
       bgm.collision.play();
     }
-    // else if (!soulTouchesMaze) {
-    //   soul.blockedDirection = ``;
-    // }
+    else if (!soulTouchesMaze) {
+      soul.collisionTiming += -1;
+    }
+
+  if (soul.collisionTiming <= 0) {
+    soul.collisionTiming = 0;
+    soul.blockedDirection = ``;
+  }
 
     
     // Check if the player (soul) touches the rotation button and trigger opening rotation of the maze walls
@@ -635,6 +642,7 @@ function soulControl() {
     let index = (current + 1 + i) % numSoulTrace; //witty equation taken from p5 library at https://p5js.org/examples/input-storing-input.html
     ellipse(pastSoulX[index], pastSoulY[index], i, i);
   }
+  
   // Keyboard Command (awsd)
   //A
   if (keyIsDown(65) && soul.x > soul.size/2) {
