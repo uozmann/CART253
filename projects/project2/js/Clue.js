@@ -17,6 +17,14 @@ class Clue {
         this.clueViewed = true;
 
         push();
+        if (bgm.hasStarted === true) {
+          bgm.hasStarted = false;
+          bgm.maze.stop();
+          bgm.clue.play();
+        }
+        pop();
+
+        push();
         imageMode(CENTER);
         if (bg.transparency < 255){
           fadeIn();

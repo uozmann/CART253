@@ -37,6 +37,7 @@ let bg = {
   caveSky: undefined,
   erhai: undefined,
   wrongClue: undefined,
+  village: undefined,
   x: undefined,
   y: undefined,
   transparency: 0,
@@ -65,10 +66,11 @@ let character = {
   empty: undefined,
  
 }
-let dialogBox = {
+
+// Image for the instruction state
+let instruction = {
   x: undefined,
   y: undefined,
-  padding: 30,
 }
 
 // Background Music
@@ -76,23 +78,45 @@ let bgm = {
   story: undefined,
   maze: undefined,
   collision: undefined,
+  clue: undefined,
+  wrongClue: undefined,
   hasStarted: false,
 }
 
+//Narrative dialog box
+let dialogBox = {
+  x: undefined,
+  y: undefined,
+  padding: 30,
+}
+
 // Story text arrays
-let lineCave = [`Where am I...(click to continue)`, `A dead corpse (click to continue)`, `What is this place? Seems like a cave... (click to continue)`, `Who is this skeleton? (click to continue)`, `I must go out, let's see what's outside the cave... (click to continue)`,];
-let lineClue1 = [`This is the story of a poor young man...(click to continue)`, `To whom magic powers have been gifted (click to continue)`, `He can transform himself into anything... (click to continue)`, `So he became a bird, and entered the princess' garden. (click to continue)`, `And they fell in love (click to continue)`,];
-let lineClue2 = [`However their love for each other is not tolerated...(click to continue)`, `So in order to stay together they decided to leave the palace (click to continue)`, `The man transformed into a bird and carried the princess to a cave (click to continue)`, `A cave on top of the snow mountain. (click to continue)`, `Where they decided to leve the rest of their life (click to continue)`,];
+let lineCave = [`Where am I...(click to continue)`, `A dead corpse (click to continue)`, `What is this place? Seems like a cave...`, `I can't remember anything...Why am I here? What am I? And who is this skeleton?`, `I must go out, let's see what's outside the cave...`,];
+let lineClue1 = [`This is the story of a poor young man...`, `To whom magic powers have been gifted `, `He can transform himself into anything... `, `So he became a bird, and entered the princess' garden.`, `And they fell in love`,];
+let lineClue2 = [`However their love for each other is not tolerated...`, `So in order to stay together they decided to leave the palace.`, `The man transformed into a bird and carried the princess to a cave.`, `A cave on top of the snow mountain.`, `Where they decided to leve the rest of their life.`,];
 let lineClue3 = [`This is the story of a poor king...(click to continue)`, `To whom his precious daughter has been taken away (click to continue)`, `He asked a priest to help him bring back his dear one... (click to continue)`, `The priest with his powerful magic searched in the palace (click to continue)`, `And guessed the young man will come back (click to continue)`,];
 let lineClue4 = [`The snow mountain was so cold that...(click to continue)`, `The princess could not bear the cold of winter (click to continue)`, `She kindly asked the man to get her precious coat. (click to continue)`, `That can protect her from the hardest cold (click to continue)`, `So the man became a bird and flew to the palace. (click to continue)`,];
 let lineClue5 = [`In his way awaits the priest.(click to continue)`, `He catched the young man and petrified him without mercy (click to continue)`, `Then he left as he is now the most powerful magician. (click to continue)`, `The king could never see his daughter again (click to continue)`, `And the princess could not survive winter in her cave. (click to continue)`,];
 let lineWrongClue = [`I hear voices...Where am I?(click to continue)`, `Ah my head hurts! I should get out of here (click to continue)`,];
-let lineEnding1 = [`Now it's the same cave again...(click to continue)`, `I think I know who is this skeleton. (click to continue)`, `Alone standing beside the lake (click to continue)`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
-let lineEnding2 = [`The soul exit the maze.(click to continue)`, `And sees the king (click to continue)`, `Alone standing beside the lake (click to continue)`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
+let lineEnding1 = [`Now it's the same cave again...(click to continue)`, `All those scenes I have seen...`, `Are they real? Are they memories?`, `If so...`, `I think I know who this skeleton is.`, `it's...`];
+let lineEnding2 = [`And suddenly I remember everything`, `My death, my sorrow, my anger... Everything hidden inside lies.`, `I remember blablabla...`, `Contemplating the left sorrow (click to continue)`, `And the soul remembers. (click to continue)`,];
 let currentLine = 0;
 
+// Ending Text Input Box
+let endingChoice = {
+  line: ``,
+  x: undefined,
+  y: undefined,
+  choiceBox: undefined, //image for the input box
+  padding: -30,
+  longueur: 450,
+  largeur: 80,
+  entry: false, //set the entry to false at first
+
+}
+
 // Initial state
-let state = `maze`;
+let state = `ending`;
 
 // Colours
 let purple = {
@@ -145,6 +169,7 @@ let rotationButton = {
   x: undefined,
   y: undefined,
   size: 100,
+  image: undefined,
 }
 
 // Trigger for clue narratives
@@ -168,13 +193,14 @@ function preload() {
   caveatRegular = loadFont(`assets/fonts/Caveat/Caveat-Regular.ttf`); 
   poiretRegular = loadFont(`assets/fonts/Poiret/PoiretOne-Regular.ttf`); 
   bg.cave = loadImage(`assets/images/bgcave.jpg`);
-  bg.maze1 = loadImage(`assets/images/bgmaze1.png`);
+  // bg.maze1 = loadImage(`assets/images/bgmaze1.png`);
   bg.palace = loadImage(`assets/images/bgpalace.jpg`);
   bg.mountain = loadImage(`assets/images/bgmountain.jpg`);
   bg.monastere = loadImage(`assets/images/bgmonastere.jpg`);
   bg.caveSky = loadImage(`assets/images/bgcaveandsky.jpg`);
   bg.erhai = loadImage(`assets/images/bgerhai.jpg`);
   bg.wrongClue = loadImage(`assets/images/bgwrongclue.jpg`);
+  bg.village = loadImage(`assets/images/bgvillage.jpg`);
   character.man = loadImage(`assets/images/character-man.png`); 
   character.princess = loadImage(`assets/images/character-princess.png`);
   character.princessCave = loadImage(`assets/images/character-princesscave.png`);  
@@ -190,9 +216,14 @@ function preload() {
     let loadedImage = loadImage(`assets/images/clue-${i}.png`);
     clueImages.push(loadedImage);
   }
+  rotationButton.image = loadImage(`assets/images/rotationtrigger.png`);
   dialogBox = loadImage(`assets/images/ui_dialogbox.png`); 
+  instruction = loadImage(`assets/images/ui_instructions.png`); 
+  endingChoice.choiceBox = loadImage(`assets/images/ui_choiceinput.png`); 
   bgm.story = loadSound(`assets/sounds/bgm_magicforest.mp3`); 
   bgm.maze = loadSound(`assets/sounds/bgm_maze.mp3`);
+  bgm.clue = loadSound(`assets/sounds/bgm_traditional.mp3`);
+  bgm.wrongClue = loadSound(`assets/sounds/bgm_wrongclue.mp3`); 
   bgm.collision = loadSound(`assets/sounds/bgm_collision.mp3`);
 }
 
@@ -264,6 +295,10 @@ function draw() {
     cave();
     break;
 
+  case `mazeInstruction`:
+    mazeInstruction();
+    break;
+
   case `maze`:
     maze();
     break;
@@ -299,6 +334,10 @@ function draw() {
 
   case `ending`:
     ending();
+    break;
+
+  case `ending2`:
+    ending2();
     break;
   
   case `narrative`:
@@ -386,22 +425,58 @@ function cave(){
     let dialogCave = lineCave[currentLine];
     textFont(poiretRegular);
     textSize(32);
-    text(dialogCave, width/2, height*7/8 );
+    rectMode(CENTER);
+    text(dialogCave, width/2, height*7/8);
   }
   pop();
 
   if (currentLine === lineCave.length) {
-    state = 'maze'; //when the dialog finishes go to the next state
+    state = 'mazeInstruction'; //when the dialog finishes go to the next state
   }
 }
 
 
-// The soul then tries to leave the cave and falls under a maze. The walls of the maze are all moving depending on the time. The soul will need to find clues hinting at their identities.
+//Instruction page for the maze
+function mazeInstruction() {
+  background(purple.r, purple.g, purple.b);
+  fill(255);
+
+  // Header
+  push();
+  textFont(irishGroverRegular);
+  textSize(200);
+  textAlign(CENTER, CENTER);
+  text(`Instructions`, width / 2, height / 5);
+  pop();
+
+  // Paragraph
+  push();
+  textFont(poiretRegular);
+  textSize(32);
+  textAlign(CENTER, CENTER);
+  text(`Press to Continue`, width/2, height / 3);
+  pop();
+
+  // Image
+  push();
+  textFont(poiretRegular);
+  textSize(32);
+  imageMode(CENTER);
+  image(instruction, width/2, height*2/3, width*5/9, height/2);
+  pop();
+
+  
+}
+
+
+// The soul then tries to leave the cave and falls under a maze. The soul will need to find clues hinting at their identities.
 function maze(){
   if (bgm.hasStarted === false) {
     bgm.hasStarted = true;
     bgm.maze.loop();
     bgm.story.stop();
+    bgm.clue.stop();
+    bgm.wrongClue.stop();
   }
   background(0);
   noStroke();
@@ -409,12 +484,6 @@ function maze(){
 
   // Call the soul function to make to move
   soulControl();
-
-  // Display trigger button for maze rotation
-  push();
-  fill(yellow.r, yellow.g, yellow.b);
-  ellipse(rotationButton.x, rotationButton.y, rotationButton.size);
-  pop();
 
   // display the maze
   for (let i = 0; i < mazeBlocks.length; i++) {
@@ -462,6 +531,14 @@ function maze(){
       mazeblock.move();
     }
   }
+
+  // Display trigger button for maze rotation
+  push();
+  fill(yellow.r, yellow.g, yellow.b);
+  ellipse(rotationButton.x, rotationButton.y, rotationButton.size);
+  imageMode(CENTER);
+  image(rotationButton.image, rotationButton.x, rotationButton.y);
+  pop();
 
   // Display the clue Buttons
   for (let i=0; i < clueButtons.length; i++) {
@@ -514,7 +591,7 @@ function maze(){
 }
 
 
-// The soul exit the maze and sees itself again in its dear country. She remembers who she is (the princess), and flies to the sky. Her sad tears became the rain pouring  on Er Hai
+// The soul returns back to the cave and guesses the identity of the skeleton
 function ending(){
   background(0);
   fill(white.r, white.g, white.b);
@@ -566,8 +643,40 @@ function ending(){
   text(dialogEnding1, width/2, height*7/8 );
   pop();
 
-  if (currentLine === lineClue5.length) {
-    state = 'narrative';
+  if (currentLine === lineEnding1.length) {
+    choiceInput();
+  } 
+}
+
+
+//The soul exit the maze and sees itself again in its dear country. She remembers who she is (the princess), and flies to the sky. Her sad tears became the rain pouring  on Er Hai
+function ending2(){
+  background(0);
+  fill(white.r, white.g, white.b);
+
+  // Background images and characters
+  push();
+  imageMode(CENTER);
+  if (bg.transparency < 255){
+    fadeIn();
+  }
+  bg.x = map(mouseX, 0, width, 700, width-700);
+  bg.y = map(mouseY, 0, height, 200, height-200);
+  image(bg.village, bg.x, bg.y,);
+  pop();
+
+  // Dialog text
+  push();
+  image(dialogBox, 0, 0, width, height);
+  let dialogEnding2 = lineEnding2[currentLine];
+  textFont(poiretRegular);
+  textSize(32);
+  textAlign(CENTER);
+  text(dialogEnding2, width/2, height*7/8 );
+  pop();
+
+  if (currentLine === lineEnding2.length) {
+    state = 'narrative'
   } 
 }
 
@@ -598,6 +707,14 @@ function wrongClue(){
   background(0);
   fill(255);
   textAlign(CENTER);
+
+  push();
+  if (bgm.hasStarted === true) {
+    bgm.hasStarted = false;
+    bgm.maze.stop();
+    bgm.wrongClue.play();
+  }
+  pop();
 
   push();
   imageMode(CENTER);
@@ -678,9 +795,13 @@ function mousePressed() {
     state = 'cave';
     bgm.story.loop();
   }
+
+  if (state === 'mazeInstruction') {
+    state = 'maze';
+  }
   
   // count the dialog length
-  if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5' || 'wrongClue') {
+  if (state === 'cave'|| 'clue1' || 'clue2' || 'clue3' || 'clue4' || 'clue5' || 'wrongClue' || 'ending' || 'ending2') {
     currentLine = currentLine + 1;
   }
 }
@@ -697,4 +818,57 @@ function fadeIn() {
 function fadeOut() {
   bg.transparency += -5;
   tint(255, bg.transparency);
+}
+
+//Key input box for the ending
+function choiceInput() {
+  endingChoice.entry = true;
+  push();
+  imageMode(CENTER);
+  image(endingChoice.choiceBox, width/2, height/3)
+  rectMode(CENTER);
+  fill(255);
+  endingChoice.x = width/2;
+  endingChoice.y = height/3;
+  rect(endingChoice.x, endingChoice.y - endingChoice.padding, endingChoice.longueur, endingChoice.largeur);
+  pop();
+
+  push();
+  fill(purple.r, purple.g, purple.b);
+  textAlign(CENTER, CENTER);
+  textFont(irishGroverRegular);
+  textSize(40);
+  text(endingChoice.line, endingChoice.x, endingChoice.y - endingChoice.padding);
+  pop();
+}
+
+//check answer for choiceInput()
+function checkAnswer() {
+  if(endingChoice.line === `PRINCESS`) {
+    currentLine = 0;
+    state = `ending2`;
+  }
+  else {
+    state = `narrative`;
+  }
+}
+
+//key typed in the ending
+function keyTyped() {
+  if (endingChoice.entry) {
+    endingChoice.line += key;
+  }
+}
+
+//command for corrections
+function keyPressed() {
+  if (endingChoice.entry) {
+    if (keyCode === BACKSPACE) {
+      // Remove the last character in a string!
+      endingChoice.line = endingChoice.line.slice(0, endingChoice.line.length - 1);
+    }
+    else if (keyCode === ENTER) {
+      checkAnswer();
+    }
+  }
 }
