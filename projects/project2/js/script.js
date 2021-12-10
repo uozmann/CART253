@@ -701,7 +701,7 @@ function narrative(){
   textFont(irishGroverRegular);
   textSize(40);
   textAlign(CENTER);
-  text(`The Real Legend (End)`, width / 2, height / 8);
+  text(`The Real Legend (End)`, width / 2, height / 10);
   pop();
 
   // Paragraph
@@ -728,7 +728,7 @@ function narrative(){
   and see her lover. Therefore, later generations called this cloud of eternal sorrow.
 
       Of course, in reality, the appearance of this cloud is entirely caused by the high-speed airflow, and it is related to the special 
-  geographical location of Cangshan and Erhai.`, width/2, height/6 );
+  geographical location of Cangshan and Erhai.`, width/2, height/2 );
   pop();
 }
 
@@ -766,7 +766,7 @@ function wrongClue(){
     let dialogWrongClue = lineWrongClue[currentLine];
     textFont(poiretRegular);
     textSize(32);
-    text(dialogWrongClue, width/2, height/2 );
+    text(dialogWrongClue, width/2, height*7/8 );
   }
   pop();
 
