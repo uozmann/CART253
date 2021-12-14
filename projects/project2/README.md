@@ -1,6 +1,13 @@
 # The Maze
-## Man Zou
-## CART 253
+Man Zou
+
+CART 253
+
+## Video Documentation of Game (Start to End)
+
+To avoid any changes due to window size, here is a reference video:
+https://drive.google.com/file/d/1nc3JoG0tqQ_AFhjsvQ39txDfQL9iyaK8/view
+
 
 ## Concept Overview
 
@@ -44,37 +51,37 @@ All the visual elements are made by myself. The style incorporates both traditio
 1. The Cave
 ![alt text][cave]
 
-[cave]: assets\images\bgcave.jpg "1"
+[cave]: https://github.com/uozmann/CART253/blob/main/projects/project2/assets/images/bgcave.jpg "1"
 
 2. The Palace Garden
 ![alt text][palace]
 
-[palace]: assets\images\bgpalace.jpg "2"
+[palace]: https://github.com/uozmann/CART253/blob/main/projects/project2/assets/images/bgpalace.jpg "2"
 
 3. The Cangshan Mountain
 ![alt text][Cangshan]
 
-[Cangshan]: assets\images\bgmountain.jpg "3"
+[Cangshan]: https://github.com/uozmann/CART253/blob/main/projects/project2/assets/images/bgmountain.jpg "3"
 
 4. The Three Pagodes
 ![alt text][temple]
 
-[temple]: assets\images\bgmonastere.jpg "4"
+[temple]: https://github.com/uozmann/CART253/blob/main/projects/project2/assets/images/bgmonastere.jpg "4"
 
 5. The Cave
 ![alt text][cave2]
 
-[cave2]: assets\images\bgcaveandsky.jpg "5"
+[cave2]: https://github.com/uozmann/CART253/blob/main/projects/project2/assets/images/bgcaveandsky.jpg "5"
 
 6. Erhai Lake
 ![alt text][Erhai]
 
-[Erhai]: assets\images\bgerhai.jpg "6"
+[Erhai]: https://github.com/uozmann/CART253/blob/main/projects/project2/assets/images/bgerhai.jpg "6"
 
 7. Heqing 
 ![alt text][Heqing]
 
-[Heqing]: assets\images\bgvillage.jpg "7"
+[Heqing]: https://github.com/uozmann/CART253/blob/main/projects/project2/assets/images/bgvillage.jpg "7"
 
 
 ## Research on Clothing
@@ -83,14 +90,14 @@ Here are some (not all) reference photos taken from old painting of the Nan Zhao
 1. King
 ![alt text][King]
 
-[King]: assets\references\king.jpg.crdownload "8"
+[King]: http://img.mp.itc.cn/upload/20170329/560a1d45dec54b2fb37cbf9c29b6d95d_th.jpg "8"
 http://img.mp.itc.cn/upload/20170329/560a1d45dec54b2fb37cbf9c29b6d95d_th.jpg
 
 2. Monk (Priest) at the left
 ![alt text][Monk]
 
-[Monk]: assets\references\monk.jpg.crdownload "8"
-https://nimg.ws.126.net/?url=http%3A%2F%2Fdingyue.ws.126.net%2FXAp0%3DzW5R%3DmAhNyzgkvuwIQUelcxUHi8yz3fEvNHsfa4O1541744439899.jpg&thumbnail=650x2147483647&quality=80&type=jpg
+[Monk]: http://img.mp.itc.cn/upload/20170329/bd39807bb0ed4e5c91ad5e7551395109_th.jpg "9"
+http://img.mp.itc.cn/upload/20170329/bd39807bb0ed4e5c91ad5e7551395109_th.jpg
 
 
 ## Codes requirements:
