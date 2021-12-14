@@ -31,6 +31,7 @@ let poiretRegular;
 let bg = {
   cover: undefined,
   cave: undefined,
+  cavesmaller: undefined,
   palace: undefined,
   mountain: undefined,
   monastere: undefined,
@@ -196,6 +197,7 @@ function preload() {
   poiretRegular = loadFont(`assets/fonts/Poiret/PoiretOne-Regular.ttf`); 
   bg.cover = loadImage(`assets/images/bgcover.jpg`);
   bg.cave = loadImage(`assets/images/bgcave.jpg`);
+  bg.cavesmaller = loadImage(`assets/images/bgcavesmaller.jpg`);
   bg.palace = loadImage(`assets/images/bgpalace.jpg`);
   bg.mountain = loadImage(`assets/images/bgmountain.jpg`);
   bg.monastere = loadImage(`assets/images/bgmonastere.jpg`);
@@ -234,7 +236,7 @@ function setup() {
   createCanvas(windowWidth,windowHeight);
   console.log(windowWidth)
   if(windowWidth < 1000) {
-    bg.cave.resize(bg.cave.width*2/3,0);
+    bg.cave = bg.cavesmaller;
   }
   userStartAudio();
 
