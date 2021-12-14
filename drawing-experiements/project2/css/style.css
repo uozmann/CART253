@@ -1,0 +1,38 @@
+/*********************************************
+
+Here is a description of any special CSS used.
+In this case it's just padding and margin to 0
+and then centring the canvas (and anything else)
+using the CSS Grid.
+
+Also hides overflow.
+
+**********************************************/
+
+@font-face {
+  font-family: irishGroverRegular;
+  src: url("../assets/fonts/Irish Grover/IrishGrover-Regular.ttf");
+}
+
+body {
+  background: black;
+  padding: 0;
+  margin: 0;
+  overflow: hidden; /* Hide anything that goes off the window size */
+
+  font-family: irishGroverRegular;
+  font-size: 5em;
+  
+  color: white;
+ 
+   /* set the canvas to the middle of the window */
+   height: 100vh;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+canvas {
+  width: 50vw;
+  height: auto;
+}
