@@ -433,6 +433,7 @@ function cave(){
     textFont(poiretRegular);
     textSize(32);
     rectMode(CENTER);
+    textAlign(CENTER);
     text(dialogCave, width/2, height*7/8); //dialof text
   }
   pop();
