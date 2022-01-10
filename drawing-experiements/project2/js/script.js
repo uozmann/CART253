@@ -30,15 +30,32 @@ let poiretRegular;
 //Background Images
 let bg = {
   cover: undefined,
+  coversmaller: undefined,
+  coverbig: undefined,
   cave: undefined,
   cavesmaller: undefined,
+  cavebig: undefined,
   palace: undefined,
+  palacesmaller: undefined,
+  palacebig: undefined,
   mountain: undefined,
+  mountainsmaller: undefined,
+  mountainbig: undefined,
   monastere: undefined,
+  monasteresmaller: undefined,
+  monasterebig: undefined,
   caveSky: undefined,
+  caveSkysmaller: undefined,
+  caveSkybig: undefined,
   erhai: undefined,
+  erhaismaller: undefined,
+  erhaibig: undefined,
   wrongClue: undefined,
+  wrongCluesmaller: undefined,
+  wrongCluebig: undefined,
   village: undefined,
+  villagesmaller: undefined,
+  villagebig: undefined,
   x: undefined,
   y: undefined,
   transparency: 0,
@@ -65,7 +82,6 @@ let character = {
   soul: undefined,
   soulSparkles: undefined,
   empty: undefined,
- 
 }
 // Image for the instruction state
 let instruction = {
@@ -195,16 +211,24 @@ function preload() {
   cairoRegular = loadFont(`assets/fonts/Cairo/Cairo-Regular.ttf`);
   caveatRegular = loadFont(`assets/fonts/Caveat/Caveat-Regular.ttf`); 
   poiretRegular = loadFont(`assets/fonts/Poiret/PoiretOne-Regular.ttf`); 
-  bg.cover = loadImage(`assets/images/bgcover.jpg`);
-  bg.cave = loadImage(`assets/images/bgcave.jpg`);
+  bg.coverbig = loadImage(`assets/images/bgcover.jpg`);
+  bg.coversmaller = loadImage(`assets/images/bgcoversmaller.jpg`);
+  bg.cavebig = loadImage(`assets/images/bgcave.jpg`);
   bg.cavesmaller = loadImage(`assets/images/bgcavesmaller.jpg`);
-  bg.palace = loadImage(`assets/images/bgpalace.jpg`);
-  bg.mountain = loadImage(`assets/images/bgmountain.jpg`);
-  bg.monastere = loadImage(`assets/images/bgmonastere.jpg`);
-  bg.caveSky = loadImage(`assets/images/bgcaveandsky.jpg`);
-  bg.erhai = loadImage(`assets/images/bgerhai.jpg`);
-  bg.wrongClue = loadImage(`assets/images/bgwrongclue.jpg`);
-  bg.village = loadImage(`assets/images/bgvillage.jpg`);
+  bg.palacebig = loadImage(`assets/images/bgpalace.jpg`);
+  bg.palacesmaller = loadImage(`assets/images/bgpalacesmaller.jpg`);
+  bg.mountainbig = loadImage(`assets/images/bgmountain.jpg`);
+  bg.mountainsmaller = loadImage(`assets/images/bgmountainsmaller.jpg`);
+  bg.monasterebig = loadImage(`assets/images/bgmonastere.jpg`);
+  bg.monasteresmaller = loadImage(`assets/images/bgmonasteresmaller.jpg`);
+  bg.caveSkybig = loadImage(`assets/images/bgcaveandsky.jpg`);
+  bg.caveSkysmaller = loadImage(`assets/images/bgcaveandskysmaller.jpg`);
+  bg.erhaibig = loadImage(`assets/images/bgerhai.jpg`);
+  bg.erhaismaller = loadImage(`assets/images/bgerhaismaller.jpg`);
+  bg.wrongCluebig = loadImage(`assets/images/bgwrongclue.jpg`);
+  bg.wrongCluesmaller = loadImage(`assets/images/bgwrongcluesmaller.jpg`);
+  bg.villagebig = loadImage(`assets/images/bgvillage.jpg`);
+  bg.villagesmaller = loadImage(`assets/images/bgvillagesmaller.jpg`);
   character.man = loadImage(`assets/images/character-man.png`); 
   character.princess = loadImage(`assets/images/character-princess.png`);
   character.princessCave = loadImage(`assets/images/character-princesscave.png`);  
@@ -236,7 +260,26 @@ function setup() {
   createCanvas(windowWidth,windowHeight);
   console.log(windowWidth)
   if(windowWidth < 1000) {
+    bg.cover = bg.coversmaller;
     bg.cave = bg.cavesmaller;
+    bg.caveSky = bg.caveSkysmaller;
+    bg.palace = bg.palacesmaller;
+    bg.mountain = bg.mountainsmaller;
+    bg.monastere = bg.monasteresmaller;
+    bg.erhai = bg.erhaismaller;
+    bg.village = bg.villagesmaller;
+    bg.wrongClue = bg.wrongCluesmaller;
+  }
+  else {
+    bg.cave = bg.cavebig;
+    bg.cover = bg.coverbig;
+    bg.caveSky = bg.caveSkybig;
+    bg.palace = bg.palacebig;
+    bg.mountain = bg.mountainbig;
+    bg.monastere = bg.monasterebig;
+    bg.erhai = bg.erhaibig;
+    bg.village = bg.villagebig;
+    bg.wrongClue = bg.wrongCluebig;
   }
   userStartAudio();
 
@@ -440,7 +483,8 @@ function cave(){
     textSize(32);
     rectMode(CENTER);
     textAlign(CENTER);
-    text(dialogCave, width/2, height*7/8); //dialof text
+    textWrap(WORD);
+    text(dialogCave, width/2, height*7/8, width/2 + 100); //dialog text
   }
   pop();
 
@@ -919,5 +963,31 @@ function keyPressed() {
     else if (keyCode === ENTER) {
       checkAnswer();
     }
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  if(windowWidth < 1000) {
+    bg.cover = bg.coversmaller;
+    bg.cave = bg.cavesmaller;
+    bg.caveSky = bg.caveSkysmaller;
+    bg.palace = bg.palacesmaller;
+    bg.mountain = bg.mountainsmaller;
+    bg.monastere = bg.monasteresmaller;
+    bg.erhai = bg.erhaismaller;
+    bg.village = bg.villagesmaller;
+    bg.wrongClue = bg.wrongCluesmaller;
+  }
+  else {
+    bg.cave = bg.cavebig;
+    bg.cover = bg.coverbig;
+    bg.caveSky = bg.caveSkybig;
+    bg.palace = bg.palacebig;
+    bg.mountain = bg.mountainbig;
+    bg.monastere = bg.monasterebig;
+    bg.erhai = bg.erhaibig;
+    bg.village = bg.villagebig;
+    bg.wrongClue = bg.wrongCluebig;
   }
 }
